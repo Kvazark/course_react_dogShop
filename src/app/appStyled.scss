@@ -1,0 +1,12 @@
+.wrapper-page {
+	flex: 1;
+	padding: 20px 18%;
+
+	@media screen and (width <= 800px) {
+		padding: 20px 10%;
+	}
+
+	@media screen and (width <= 500px) {
+		padding: 10px 16px;
+	}
+}

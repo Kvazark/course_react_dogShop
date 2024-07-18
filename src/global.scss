@@ -1,0 +1,38 @@
+:root {
+	--main-color: rgb(255 228 77);
+	--main-color-darker: rgb(255 170 13);
+	--main-color-lighter: rgb(255 245 192);
+	--custom-red: rgb(244 67 54);
+	--custom-blue: rgb(3 169 244);
+	--custom-green: rgb(1 165 78);
+	--text-main: rgb(26 26 26);
+	--text-secondary: rgb(123 142 152);
+	--text-outline: rgb(207 216 220);
+	--text-form: rgb(236 239 241);
+	--white-color: rgb(255 255 255);
+	--elevation-01: 0 0.5px 2px 0 rgb(96 97 112 / 24%),
+		0 0 1px 0 rgb(40 41 61 / 16%);
+	--elevation-02: 0 2px 16px 0 rgb(96 97 112 / 16%),
+		0 0 1px 0 rgb(40 41 61 / 2%);
+	--elevation-03: 0 -4px 8px 0 rgb(96 97 112 / 16%),
+		0 0 2px 0 rgb(40 41 61 / 4%);
+	--elevation-04: 0 8px 16px 0 rgb(96 97 112 / 16%),
+		0 2px 4px 0 rgb(40 41 61 / 4%);
+	--elevation-05: 0 16px 24px 0 rgb(96 97 112 / 16%),
+		0 2px 8px 0 rgb(40 41 61 / 4%);
+	--elevation-06: 0 20px 32px 0 rgb(96 97 112 / 24%),
+		0 2px 8px 0 rgb(40 41 61 / 8%);
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	color: var(--text-main);
+	font-family: 'Nunito', sans-serif;
+}
+
+#root {
+	display: flex;
+	flex-direction: column;
+	min-height: 100vh;
+}
