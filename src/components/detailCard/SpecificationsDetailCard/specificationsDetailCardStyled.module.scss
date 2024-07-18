@@ -1,0 +1,53 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 40px;
+	width: 100%;
+
+	&_description {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 100%;
+	}
+
+	&_specificationWrapper {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		width: 100%;
+
+		&_specifications {
+			display: flex;
+			flex-direction: column;
+			gap: 22px;
+		}
+	}
+}
+
+.specification {
+	display: flex;
+	gap: 8px;
+	width: 100%;
+
+	&_left {
+		min-width: 18%;
+		overflow: hidden;
+
+		span {
+			position: relative;
+			display: inline-block;
+			color: var(--text-secondary);
+		}
+
+		span::after {
+			position: absolute;
+			right: -1000%;
+			bottom: 18%;
+			left: 120%;
+			display: inline-block;
+			border-bottom: 1px solid var(--text-outline);
+			content: '';
+		}
+	}
+}

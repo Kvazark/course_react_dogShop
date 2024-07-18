@@ -1,0 +1,30 @@
+.toolbar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 80px;
+	height: 100%;
+
+	@media screen and (width <= 1200px) {
+		justify-content: space-between;
+		gap: 2px;
+		padding: 0 16px;
+	}
+
+	@media screen and (width <= 600px) {
+		justify-content: space-between;
+		gap: 4px;
+		padding: 0 16px;
+
+		button {
+			min-width: 30px;
+			max-width: 40px;
+			padding: 0;
+		}
+	}
+
+	&_icons {
+		display: flex;
+		gap: 34px;
+	}
+}
