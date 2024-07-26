@@ -3,23 +3,18 @@ import Carousel, {
 	ReactElasticCarouselProps,
 } from 'react-elastic-carousel';
 import { Card } from '../../card';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { CustomArrowCarousel, HeaderText } from '../index';
 import './carouselStyled.scss';
 import { useMediaQuery } from '@mui/material';
-import api from '../../../utils/api/productsApi';
+import { useAppSelector } from '../../../storage/hooks/useAppSelector';
+import { productsSelectors } from '../../../storage/slices/products';
 
 type TCarouselProps = {
-	// recentlyViewed: IProduct[];
 	title: string;
 };
 export const CustomCarousel = ({ title }: TCarouselProps) => {
-	const [recentlyViewed, setRecentlyViewed] = useState<IProduct[]>([]);
-	useEffect(() => {
-		api.getAllInfo().then(([productData]) => {
-			setRecentlyViewed(productData.products);
-		});
-	}, []);
+	const recentlyViewed = useAppSelector(productsSelectors.getProduct);
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const isSmallScreen = useMediaQuery('(max-width:600px)');

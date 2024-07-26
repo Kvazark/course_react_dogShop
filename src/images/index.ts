@@ -15,11 +15,14 @@ export { ReactComponent as TrashIcon } from './funcionalIcons/trash.svg';
 export { ReactComponent as AddPhotoIcon } from './funcionalIcons/addphoto.svg';
 export { ReactComponent as PlusIcon } from './funcionalIcons/Icons _ ic-plus.svg';
 export { ReactComponent as MinusIcon } from './funcionalIcons/Icons _ ic-minus.svg';
+export { ReactComponent as CloseIcon } from './funcionalIcons/Close.svg';
 
 export { ReactComponent as LeftArrowIcon } from './navigationIcons/leftArrow.svg';
 export { ReactComponent as RightArrowIcon } from './navigationIcons/rightArrow.svg';
 export { ReactComponent as MenuIcon } from './navigationIcons/menu.svg';
 export { ReactComponent as TrianglesIcon } from './navigationIcons/triangles.svg';
+export { ReactComponent as UpArrowIcon } from './navigationIcons/Icons _ ic-up-arrow.svg';
+export { ReactComponent as DownArrowIcon } from './navigationIcons/Icons _ ic-down-arrow.svg';
 
 export { ReactComponent as PhoneIcon } from './info/phone.svg';
 export { ReactComponent as MailIcon } from './info/mail.svg';

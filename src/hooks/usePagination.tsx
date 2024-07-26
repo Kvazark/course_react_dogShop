@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { MIN_PAGE } from '../globalConstants';
 
-const usePagination = <T,>(data: T[], itemsPerPage: number) => {
+export const usePagination = <T,>(data: T[], itemsPerPage: number) => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const countPages = Math.ceil(data.length / itemsPerPage);
 
@@ -33,5 +33,3 @@ const usePagination = <T,>(data: T[], itemsPerPage: number) => {
 		setPagePaginated,
 	};
 };
-
-export default usePagination;

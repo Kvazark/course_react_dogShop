@@ -1,24 +1,19 @@
 import { FavoritesFillIcon, FavoritesIcon, TrashIcon } from '../../../images';
 import { SvgIcon } from '@mui/material';
-import React, { useContext } from 'react';
 import '../cardStyled.scss';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../../context/product-context';
 import { isLiked } from '../../../utils/product';
-import { UserContext } from '../../../context/user-context';
+import { useActionCreators } from '../../../storage/hooks/useActionCreators';
+import { productsActions } from '../../../storage/slices/products';
+import { useAppSelector } from '../../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../../storage/slices/user';
 
 type TIconCard = {
 	product: IProduct;
 	variant: 'delete' | 'favorite';
 };
 export const IconCard = ({ product, variant }: TIconCard) => {
-	const { onProductLike } = useContext(
-		ProductContext
-	) as ProductContextInterface;
-
-	const currentUser = useContext(UserContext);
+	const { fetchChangeLikeProduct } = useActionCreators(productsActions);
+	const currentUser = useAppSelector(userSelectors.getUser);
 	const like = isLiked(product.likes, currentUser?.id);
 
 	return (
@@ -30,7 +25,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 						event.preventDefault();
 						event.stopPropagation();
 						product.likes &&
-							onProductLike({ id: product.id, likes: product.likes });
+							fetchChangeLikeProduct({ id: product.id, likes: product.likes });
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>
@@ -41,7 +36,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 						event.preventDefault();
 						event.stopPropagation();
 						product.likes &&
-							onProductLike({ id: product.id, likes: product.likes });
+							fetchChangeLikeProduct({ id: product.id, likes: product.likes });
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>

@@ -1,20 +1,16 @@
 import { CardList } from '../../components/cardList';
 import './catalogStyled.scss';
 import { Box, Breadcrumbs, Link, SvgIcon, Typography } from '@mui/material';
-import React, { useContext } from 'react';
 import { LeftArrowIcon, NotFoundIcon } from '../../images';
 import { BodyText, Button, Carousel, HeaderText } from '../../components/ui';
 import { Sort } from '../../components/sort';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../context/product-context';
 import { declensionWords } from '../../utils';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { productsSelectors } from '../../storage/slices/products';
 
 export const Catalog = () => {
-	const { searchTerm, products } = useContext(
-		ProductContext
-	) as ProductContextInterface;
+	const searchTerm = useAppSelector(productsSelectors.getSearchTerm);
+	const products = useAppSelector(productsSelectors.getProduct);
 	return (
 		<div className='catalog-wrapper'>
 			<div className='catalog-wrapper_header'>

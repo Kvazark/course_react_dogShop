@@ -1,18 +1,33 @@
 import s from './reviewsDetailCardStyled.module.scss';
-import { BodyText, Button, CustomArrowCarousel, HeaderText } from '../../ui';
+import {
+	BodyText,
+	Button,
+	CustomArrowCarousel,
+	HeaderText,
+	Review,
+} from '../../ui';
 import React, { useEffect, useState } from 'react';
 import Carousel, {
 	ItemObject,
 	ReactElasticCarouselProps,
 } from 'react-elastic-carousel';
 import { useMediaQuery } from '@mui/material';
-import { Review } from './ui/Review';
 import api from '../../../utils/api/productsApi';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Spinner } from '../../spinner';
+import { DownArrowIcon, RightArrowIcon } from '../../../images';
 
 export const ReviewsDetailCard = () => {
+	const navigate = useNavigate();
+	const [from, setFrom] = useState(location.pathname);
+	const [reviewsToShow, setReviewsToShow] = useState(2);
+
+	useEffect(() => {
+		setFrom(location.pathname);
+	}, [location.pathname]);
+
 	const { productId } = useParams<{ productId: string }>();
+
 	const [reviews, setReviews] = useState<IReview[]>([]);
 	const [listImages, setListImages] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -74,12 +89,34 @@ export const ReviewsDetailCard = () => {
 		return null;
 	}
 
+	const handleAddReview = () => {
+		navigate(`/product/${productId}/addReviews`, { state: { from } });
+	};
+
+	const handleToReviews = () => {
+		navigate(`/product/${productId}/reviews`, { state: { from } });
+	};
+
+	const isReviewsPage = location.pathname.includes('/reviews');
+
+	const handleShowMoreComments = () => {
+		setReviewsToShow(reviewsToShow + 2);
+	};
+
 	return (
 		<div className={s.wrapper}>
-			<HeaderText text='Отзывы' size='h2' />
-			<div>
-				<Button label='Написать отзыв' view='outlined' />
-			</div>
+			{!isReviewsPage && (
+				<>
+					<HeaderText text='Отзывы' size='h2' />
+					<div>
+						<Button
+							label='Написать отзыв'
+							view='outlined'
+							onClick={handleAddReview}
+						/>
+					</div>
+				</>
+			)}
 			{listImages.length > 0 && (
 				<div className={s.wrapper_carousel}>
 					<BodyText
@@ -100,10 +137,29 @@ export const ReviewsDetailCard = () => {
 			)}
 			{reviews && (
 				<div className={s.wrapper_listReviews}>
-					{reviews.map((item, index) => (
+					{reviews.slice(0, reviewsToShow).map((item, index) => (
 						<Review review={item} key={`${index}-review`} />
 					))}
 				</div>
+			)}
+			{reviews && !isReviewsPage ? (
+				<Button
+					label='Все отзывы'
+					view='outlined'
+					contentRight={<RightArrowIcon />}
+					stretch
+					onClick={handleToReviews}
+				/>
+			) : (
+				reviewsToShow < reviews.length && (
+					<Button
+						label='Показать ещё'
+						view='outlined'
+						contentRight={<DownArrowIcon />}
+						stretch
+						onClick={handleShowMoreComments}
+					/>
+				)
 			)}
 		</div>
 	);

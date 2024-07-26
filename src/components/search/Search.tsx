@@ -1,23 +1,28 @@
 import { SearchIcon } from '../../images';
 import './seacrhStyled.scss';
 import { Button } from '../ui';
-import React, { useContext, useState } from 'react';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../context/product-context';
+import React, { useState } from 'react';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { useAppDispatch } from '../../storage/hooks';
+import { fetchProducts } from '../../storage/slices/products/thunk';
+import { productsActions } from '../../storage/slices/products';
 
 export const Search = () => {
-	const { searchTerm, onSetSearchTerm } = useContext(
-		ProductContext
-	) as ProductContextInterface;
-
+	const dispatch = useAppDispatch();
+	const searchTerm = useAppSelector((state) => state.products.searchTerm);
 	const [currentSearchTerm, setCurrentSearchTerm] = useState(searchTerm);
 
 	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const term = e.target.value;
-		if (!term) onSetSearchTerm('');
+		if (!term) {
+			dispatch(fetchProducts({ searchQuery: '' }));
+			dispatch(productsActions.updateSearchTerm(''));
+		}
 		setCurrentSearchTerm(term);
+	};
+	const handleSearchSubmit = () => {
+		dispatch(productsActions.updateSearchTerm(currentSearchTerm));
+		dispatch(productsActions.fetchProducts({ searchQuery: currentSearchTerm }));
 	};
 
 	return (
@@ -30,7 +35,7 @@ export const Search = () => {
 			<Button
 				label={<SearchIcon />}
 				view='transparent'
-				onClick={() => onSetSearchTerm(currentSearchTerm)}
+				onClick={() => handleSearchSubmit()}
 			/>
 		</div>
 	);

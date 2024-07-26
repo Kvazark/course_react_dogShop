@@ -7,13 +7,12 @@ import {
 	TruckIcon,
 } from '../../../images';
 import { BodyText, Button, Counter, HeaderText } from '../../ui';
-import React, { useContext, useState } from 'react';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../../context/product-context';
-import { UserContext } from '../../../context/user-context';
+import React, { useState } from 'react';
 import { isLiked } from '../../../utils/product';
+import { useActionCreators } from '../../../storage/hooks/useActionCreators';
+import { productsActions } from '../../../storage/slices/products';
+import { useAppSelector } from '../../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../../storage/slices/user';
 
 type TBodyDetailCardProps = {
 	product: IProduct;
@@ -24,13 +23,13 @@ export const BodyDetailCard = ({ product }: TBodyDetailCardProps) => {
 		(product.price * (100 - product.discount)) / 100
 	);
 	const [counter, setCounter] = useState(0);
+
 	console.log(counter);
-
-	const { onProductLike } = useContext(
-		ProductContext
-	) as ProductContextInterface;
-
-	const currentUser = useContext(UserContext);
+	const {
+		fetchChangeLikeProduct,
+		// fetchDeleteProduct
+	} = useActionCreators(productsActions);
+	const currentUser = useAppSelector(userSelectors.getUser);
 	const like = isLiked(product.likes, currentUser?.id);
 
 	return (
@@ -89,7 +88,10 @@ export const BodyDetailCard = ({ product }: TBodyDetailCardProps) => {
 							event.preventDefault();
 							event.stopPropagation();
 							product.likes &&
-								onProductLike({ id: product.id, likes: product.likes });
+								fetchChangeLikeProduct({
+									id: product.id,
+									likes: product.likes,
+								});
 						}}
 					/>
 					<BodyText

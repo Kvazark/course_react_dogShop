@@ -2,23 +2,20 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BodyText, Button, HeaderText } from '../../components/ui';
 import { LeftArrowIcon } from '../../images';
 import './favoritesStyled.scss';
-import { useCallback, useContext } from 'react';
-import { UserContext } from '../../context/user-context';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../context/product-context';
+import { useCallback } from 'react';
 import { Card } from '../../components/card';
 import { SvgIcon } from '@mui/material';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../storage/slices/user';
+import { productsSelectors } from '../../storage/slices/products';
 
 export const FavoritesPage = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
-	const currentUser = useContext(UserContext);
-	const { products } = useContext(ProductContext) as ProductContextInterface;
+	const currentUser = useAppSelector(userSelectors.getUser);
+	const products = useAppSelector(productsSelectors.getProduct);
 
-	// const [favoritesProducts, setFavoritesProducts] = useState<IProduct[]>([]);
 	const userLikedProducts = useCallback(() => {
 		return products.filter((product) =>
 			product.likes.some((like) => like.userId === currentUser?.id)

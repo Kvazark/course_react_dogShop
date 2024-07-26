@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import api from '../../utils/api/productsApi';
 import { ErrorPage } from '../ErrorPage';
 import { Spinner } from '../../components/spinner';
 import './detailCard.scss';
@@ -18,63 +17,51 @@ import {
 	SpecificationsDetailCard,
 } from '../../components/detailCard';
 import { declensionWords } from '../../utils';
+import { useAppDispatch } from '../../storage/hooks';
+import { detailProductSelectors } from '../../storage/slices/detailProduct';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { RequestStatus } from '../../types/store';
+import {
+	fetchAverageRatingProduct,
+	fetchDetailProduct,
+	fetchReviewsProduct,
+} from '../../storage/slices/detailProduct/thunk';
 
 export const DetailCard = () => {
+	const dispatch = useAppDispatch();
 	const location = useLocation();
 	const navigate = useNavigate();
 
 	const { productId } = useParams<{ productId: string }>();
-	const [product, setProduct] = useState<IProduct | null>(null);
-	const [isLoading, setIsLoading] = useState(true);
-	const [hasError, setHasError] = useState(false);
-	const [averageRating, setAverageRating] = useState<{ rating: number }>({
-		rating: 0,
-	});
+
+	const product = useAppSelector(detailProductSelectors.getInfo);
+	const status = useAppSelector(detailProductSelectors.getStatus);
+	const averageRating = useAppSelector(detailProductSelectors.getAverageRating);
+	const reviewsProduct = useAppSelector(detailProductSelectors.getReviews);
+
+	useEffect(() => {
+		if (productId) {
+			dispatch(fetchDetailProduct(productId));
+			dispatch(fetchAverageRatingProduct(productId));
+			dispatch(fetchReviewsProduct(productId));
+		}
+	}, [dispatch, productId]);
 
 	const wordReview = useMemo(() => {
 		if (product) {
-			return declensionWords(product?.reviews.length, [
+			return declensionWords(reviewsProduct ? reviewsProduct.length : 0, [
 				'отзыв',
 				'отзыва',
 				'отзывов',
 			]);
 		}
 		return '';
-	}, [product]);
+	}, [product, reviewsProduct]);
 
 	const infoProduct = useMemo(() => {
 		return product?.reviews.find((review) => review.product.id === productId)
 			?.product;
 	}, [product?.reviews, productId]);
-
-	useEffect(() => {
-		if (productId) {
-			api
-				.getProductById(productId)
-				.then((productData) => {
-					setProduct(productData);
-					setIsLoading(false);
-				})
-				.catch(() => {
-					setHasError(true);
-					setIsLoading(false);
-				});
-		}
-	}, [productId, product]);
-	useEffect(() => {
-		if (productId) {
-			api
-				.getAverageRatingProductById(productId)
-				.then((ratingData) => {
-					setAverageRating(ratingData);
-					setIsLoading(false);
-				})
-				.catch(() => {
-					setHasError(true);
-					setIsLoading(false);
-				});
-		}
-	}, [productId, product]);
 
 	const handleBackClick = () => {
 		if (location.state && location.state.from) {
@@ -84,11 +71,11 @@ export const DetailCard = () => {
 		}
 	};
 
-	if (isLoading) {
+	if (status === RequestStatus.Loading) {
 		return <Spinner />;
 	}
 
-	if (hasError) {
+	if (status === RequestStatus.Failed) {
 		return <ErrorPage />;
 	}
 
@@ -119,16 +106,29 @@ export const DetailCard = () => {
 						size='p2'
 					/>
 					<div className='detailCard-wrapper_content_stars'>
-						<StarRatingIcons rating={averageRating.rating} width='16px' />
+						<StarRatingIcons
+							rating={averageRating ? averageRating.rating : 0}
+							width='16px'
+						/>
 					</div>
-					{product?.reviews.length !== undefined &&
-					product?.reviews?.length > 0 ? (
-						<Link to={'/'}>
-							<BodyText text={wordReview} size='p2' />
+					{reviewsProduct?.length !== undefined &&
+					reviewsProduct?.length > 0 ? (
+						<Link
+							to={`/product/${productId}/reviews`}
+							state={{ from: location.pathname }}>
+							<BodyText
+								text={wordReview}
+								size='p2'
+								color='var(--main-color-darker)'
+							/>
 						</Link>
 					) : (
 						<div style={{ color: 'var(--text-outline)' }}>
-							<BodyText text='0 отзывов' size='p2' />
+							<BodyText
+								text='0 отзывов'
+								size='p2'
+								color='var(--text-secondary)'
+							/>
 						</div>
 					)}
 				</div>
@@ -148,5 +148,5 @@ export const DetailCard = () => {
 			</div>
 		);
 	}
-	return <ErrorPage />;
+	return <Spinner />;
 };

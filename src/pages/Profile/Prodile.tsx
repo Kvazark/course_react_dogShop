@@ -1,16 +1,16 @@
 import './profileStyled.scss';
 import { BodyText, Button, HeaderText } from '../../components/ui';
-import { useContext } from 'react';
-import { UserContext } from '../../context/user-context';
 import { MailIcon, PhoneIcon } from '../../images';
 import { useNavigate } from 'react-router-dom';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../storage/slices/user';
 
 export const Profile = () => {
 	const navigate = useNavigate();
-	const currentUser = useContext(UserContext);
+	const currentUser = useAppSelector(userSelectors.getUser);
 
 	const handleEditClick = () => {
-		navigate('/profileEdit');
+		navigate('/profile/editInfo', { state: { from: location.pathname } });
 	};
 
 	const handleExitClick = () => {

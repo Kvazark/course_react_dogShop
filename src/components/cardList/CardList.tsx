@@ -1,6 +1,6 @@
-import React, { ChangeEvent, useContext } from 'react';
+import React, { ChangeEvent } from 'react';
 import './cardListStyled.scss';
-import usePagination from '../../hooks/usePagination';
+
 import { Card } from '../card';
 import {
 	Pagination,
@@ -10,14 +10,13 @@ import {
 } from '@mui/material';
 import { LeftArrowIcon, RightArrowIcon } from '../../images';
 import { Button } from '../ui';
-import {
-	ProductContext,
-	ProductContextInterface,
-} from '../../context/product-context';
+import { usePagination } from '../../hooks';
+import { productsSelectors } from '../../storage/slices/products';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
 
 const PER_PAGE = 6;
 export const CardList = () => {
-	const { products } = useContext(ProductContext) as ProductContextInterface;
+	const products = useAppSelector(productsSelectors.getProduct);
 
 	const { currentPage, getCurrentData, setPagePaginated, countPages } =
 		usePagination<IProduct>(products, PER_PAGE);
