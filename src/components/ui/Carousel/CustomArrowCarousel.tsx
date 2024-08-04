@@ -1,5 +1,5 @@
 import { Button } from '../index';
-import { LeftArrowIcon, RightArrowIcon } from '../../../images';
+import { LeftArrowIcon, RightArrowIcon } from '../../../assets/images';
 import React from 'react';
 import { SvgIcon } from '@mui/material';
 

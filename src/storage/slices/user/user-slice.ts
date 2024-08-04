@@ -1,47 +1,37 @@
-import { RequestStatus } from '../../../types/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { fetchEditUser, fetchUser } from './thunk';
-import { isActionPending, isActionRejected } from '../../../utils';
 
 interface UserState {
-	info: IUserBase | null;
-	status: RequestStatus;
+	info: Partial<IUserBase> | null;
+	accessToken: string;
 }
 
-const initialState: UserState = {
+const createInitState = (): UserState => ({
 	info: null,
-	status: RequestStatus.Idle,
-};
+	accessToken: '',
+});
 
 const USER_SLICE_NAME = 'user';
 export const userSlice = createSlice({
 	name: USER_SLICE_NAME,
-	initialState,
+	initialState: createInitState(),
 	reducers: {
-		setUser: (state, action: PayloadAction<IUserBase>) => {
+		setAccessToken(state, action: PayloadAction<Pick<Token, 'accessToken'>>) {
+			state.accessToken = action.payload.accessToken;
+		},
+		clearUser() {
+			return createInitState();
+		},
+		updateUserInfo: (state, action: PayloadAction<Partial<IUserBase>>) => {
+			if (state.info) {
+				state.info = { ...state.info, ...action.payload };
+			}
+		},
+		setUser: (state, action: PayloadAction<UserState['info']>) => {
 			state.info = action.payload;
 		},
 	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(fetchUser.fulfilled, (state, action) => {
-				state.info = action.payload;
-				state.status = RequestStatus.Success;
-			})
-			.addCase(fetchEditUser.fulfilled, (state, action) => {
-				state.info = action.payload;
-				state.status = RequestStatus.Success;
-			})
-			.addMatcher(isActionPending(userSlice.name), (state) => {
-				state.status = RequestStatus.Loading;
-			})
-			.addMatcher(isActionRejected(userSlice.name), (state) => {
-				state.status = RequestStatus.Failed;
-			});
-	},
-
 	selectors: {
 		getUser: (state: UserState) => state.info,
-		getUserStatus: (state: UserState) => state.status,
+		accessTokenSelector: (state: Token) => state.accessToken,
 	},
 });

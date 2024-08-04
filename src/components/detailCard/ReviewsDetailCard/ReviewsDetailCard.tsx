@@ -12,10 +12,12 @@ import Carousel, {
 	ReactElasticCarouselProps,
 } from 'react-elastic-carousel';
 import { useMediaQuery } from '@mui/material';
-import api from '../../../utils/api/productsApi';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Spinner } from '../../spinner';
-import { DownArrowIcon, RightArrowIcon } from '../../../images';
+import { DownArrowIcon, RightArrowIcon } from '../../../assets/images';
+import { useAppSelector } from '../../../storage/hooks/useAppSelector';
+import { detailProductSelectors } from '../../../storage/slices/detailProduct';
+import { useGetReviewsProductByIdQuery } from '../../../api/products';
 
 export const ReviewsDetailCard = () => {
 	const navigate = useNavigate();
@@ -28,33 +30,25 @@ export const ReviewsDetailCard = () => {
 
 	const { productId } = useParams<{ productId: string }>();
 
-	const [reviews, setReviews] = useState<IReview[]>([]);
+	const reviews = useAppSelector(detailProductSelectors.getReviews);
+	const {
+		data: reviewsData,
+		isLoading,
+		error,
+	} = useGetReviewsProductByIdQuery(productId || '');
+
 	const [listImages, setListImages] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
-	const [hasError, setHasError] = useState(false);
 
 	useEffect(() => {
-		if (productId) {
-			api
-				.getReviewsProductById(productId)
-				.then((reviewsData) => {
-					const allImages: string[] = [];
-					reviewsData.forEach((review: IReview) => {
-						////для карусели, чтобы видно было
-						allImages.push(review.product.images);
-						allImages.push(review.product.images);
-						allImages.push(review.product.images);
-						allImages.push(review.product.images);
-					});
-
-					setListImages(allImages);
-					setReviews(reviewsData);
-					setIsLoading(false);
-				})
-				.catch(() => {
-					setHasError(true);
-					setIsLoading(false);
-				});
+		if (reviewsData) {
+			const allImages: string[] = [];
+			reviewsData.forEach((review: IReview) => {
+				allImages.push(review.product.images);
+				allImages.push(review.product.images);
+				allImages.push(review.product.images);
+				allImages.push(review.product.images);
+			});
+			setListImages(allImages);
 		}
 	}, [productId]);
 
@@ -85,7 +79,7 @@ export const ReviewsDetailCard = () => {
 		return <Spinner />;
 	}
 
-	if (hasError) {
+	if (error) {
 		return null;
 	}
 
@@ -151,6 +145,7 @@ export const ReviewsDetailCard = () => {
 					onClick={handleToReviews}
 				/>
 			) : (
+				reviews &&
 				reviewsToShow < reviews.length && (
 					<Button
 						label='Показать ещё'

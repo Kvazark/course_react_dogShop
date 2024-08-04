@@ -28,3 +28,12 @@
 		gap: 34px;
 	}
 }
+
+.noAuth {
+	display: flex;
+	gap: 16px;
+
+	a {
+		text-decoration: none;
+	}
+}

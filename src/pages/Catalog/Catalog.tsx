@@ -1,16 +1,31 @@
 import { CardList } from '../../components/cardList';
 import './catalogStyled.scss';
 import { Box, Breadcrumbs, Link, SvgIcon, Typography } from '@mui/material';
-import { LeftArrowIcon, NotFoundIcon } from '../../images';
+import { LeftArrowIcon, NotFoundIcon } from '../../assets/images';
 import { BodyText, Button, Carousel, HeaderText } from '../../components/ui';
 import { Sort } from '../../components/sort';
 import { declensionWords } from '../../utils';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
 import { productsSelectors } from '../../storage/slices/products';
+import { withProtection } from '../../HOCs/withProtection';
+import { useGetProductsQuery } from '../../api/products';
+import { getMessageFromError } from '../../utils/errorUtils';
+import { userSelectors } from '../../storage/slices/user';
 
-export const Catalog = () => {
+export const Catalog = withProtection(() => {
 	const searchTerm = useAppSelector(productsSelectors.getSearchTerm);
-	const products = useAppSelector(productsSelectors.getProduct);
+	const products = useAppSelector(productsSelectors.getProducts);
+	const user = useAppSelector(userSelectors.getUser);
+
+	const { data, isError, isLoading, error, refetch } = useGetProductsQuery(
+		{},
+		{
+			skip: !user?.id,
+		}
+	);
+
+	console.log(products);
+
 	return (
 		<div className='catalog-wrapper'>
 			<div className='catalog-wrapper_header'>
@@ -41,7 +56,18 @@ export const Catalog = () => {
 				)}
 				{products.length > 0 && <Sort />}
 			</div>
-			{products.length > 0 && <CardList />}
+			{products.length > 0 && (
+				<CardList
+					isError={isError}
+					isLoading={isLoading}
+					refetch={refetch}
+					queryErrorMessage={getMessageFromError(
+						error,
+						'Unknown error with products'
+					)}
+					products={data?.products ?? []}
+				/>
+			)}
 			{searchTerm.length > 0 && products.length === 0 && (
 				<Box
 					sx={{
@@ -77,4 +103,4 @@ export const Catalog = () => {
 			{searchTerm.length === 0 && <Carousel title='Вы смотрели' />}
 		</div>
 	);
-};
+});

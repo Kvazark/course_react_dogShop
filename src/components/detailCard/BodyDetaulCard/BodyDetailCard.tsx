@@ -5,45 +5,75 @@ import {
 	FavoritesIcon,
 	QualityIcon,
 	TruckIcon,
-} from '../../../images';
+} from '../../../assets/images';
 import { BodyText, Button, Counter, HeaderText } from '../../ui';
 import React, { useState } from 'react';
 import { isLiked } from '../../../utils/product';
-import { useActionCreators } from '../../../storage/hooks/useActionCreators';
-import { productsActions } from '../../../storage/slices/products';
 import { useAppSelector } from '../../../storage/hooks/useAppSelector';
 import { userSelectors } from '../../../storage/slices/user';
+import {
+	useGetProductQuery,
+	useSetLikeProductMutation,
+} from '../../../api/products';
+import { changeLike } from '../../../storage/slices/products/products-slice';
+import { useAppDispatch } from '../../../storage/hooks';
 
 type TBodyDetailCardProps = {
-	product: IProduct;
+	productProps: IProduct;
 };
 
-export const BodyDetailCard = ({ product }: TBodyDetailCardProps) => {
+export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
+	const dispatch = useAppDispatch();
+	const { data: product, refetch } = useGetProductQuery(productProps.id);
+	const currentUser = useAppSelector(userSelectors.getUser);
+	const [setLikeProductRequestFn] = useSetLikeProductMutation();
+
+	const [counter, setCounter] = useState(0);
+	console.log(counter);
+
+	if (!product) {
+		return null;
+	}
+
 	const currentPrice = Math.round(
 		(product.price * (100 - product.discount)) / 100
 	);
-	const [counter, setCounter] = useState(0);
 
-	console.log(counter);
-	const {
-		fetchChangeLikeProduct,
-		// fetchDeleteProduct
-	} = useActionCreators(productsActions);
-	const currentUser = useAppSelector(userSelectors.getUser);
 	const like = isLiked(product.likes, currentUser?.id);
+	const handleLikeClick = async () => {
+		try {
+			await setLikeProductRequestFn({ like, productId: product?.id }).unwrap();
+			await refetch();
+			dispatch(changeLike({ productId: product?.id, like: !like }));
+		} catch (error) {
+			alert(`Ошибка при изменении лайка: ${error}`);
+		}
+	};
 
 	return (
 		<div className={s.cardWrapper}>
 			<div className={s.cardWrapper_currentImg}>
 				<div className={s.cardWrapper_labels}>
 					{product.discount !== 0 && product.discount !== null && (
-						<div className='label'>-{product.discount}%</div>
+						<div className='label'>
+							<BodyText
+								text={`-${product.discount}%`}
+								size='p1'
+								fontWeight='800'
+								color='var(--white-color)'
+							/>
+						</div>
 					)}
 					{product.tags.length !== 0 && (
 						<>
 							{product.tags.map((item, index) => (
 								<div className='label' key={`${index}-tag`}>
-									{item}
+									<BodyText
+										text={item}
+										size='p1'
+										fontWeight='800'
+										color='var(--white-color)'
+									/>
 								</div>
 							))}
 						</>
@@ -53,9 +83,6 @@ export const BodyDetailCard = ({ product }: TBodyDetailCardProps) => {
 			</div>
 			<div className={s.cardWrapper_listImgs}>
 				<div className={s.cardWrapper_listImgs_image}>
-					{/*{product.images?.map((item, index) => (*/}
-					{/*	<img src={item} alt='photo' key={`${index}-image`} />*/}
-					{/*))}*/}
 					<img src={product.images} alt='img' />
 				</div>
 			</div>
@@ -88,10 +115,11 @@ export const BodyDetailCard = ({ product }: TBodyDetailCardProps) => {
 							event.preventDefault();
 							event.stopPropagation();
 							product.likes &&
-								fetchChangeLikeProduct({
-									id: product.id,
-									likes: product.likes,
-								});
+								// setLikeProductRequestFn({
+								// 	like,
+								// 	productId: product.id,
+								// }).unwrap();
+								handleLikeClick();
 						}}
 					/>
 					<BodyText

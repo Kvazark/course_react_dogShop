@@ -1,7 +1,7 @@
 import { HeaderText } from '../../components/ui';
 import { Link } from 'react-router-dom';
 import { SvgIcon } from '@mui/material';
-import { RightArrowIcon } from '../../images';
+import { RightArrowIcon } from '../../assets/images';
 import './homepageStyled.scss';
 
 export const HomePage = () => {

@@ -1,7 +1,7 @@
 import { Button, Menu, MenuItem, useMediaQuery } from '@mui/material';
 import { BodyText } from '../ui';
 import './sortStyled.scss';
-import { TrianglesIcon } from '../../images';
+import { TrianglesIcon } from '../../assets/images';
 import React, { useState } from 'react';
 
 export const Sort = () => {

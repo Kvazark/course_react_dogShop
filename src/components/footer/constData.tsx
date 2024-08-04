@@ -4,7 +4,7 @@ import {
 	DogIcon,
 	FavoritesIcon,
 	HomeIcon,
-} from '../../images';
+} from '../../assets/images';
 import { ReactNode } from 'react';
 
 export type TItemLink = {

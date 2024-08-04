@@ -2,15 +2,11 @@ import s from './addReviewStyled.module.scss';
 import { useAppDispatch } from '../../storage/hooks';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
-import { detailProductSelectors } from '../../storage/slices/detailProduct';
-import { useEffect, useState } from 'react';
 import {
-	fetchAddReviewProductById,
-	fetchDetailProduct,
-	fetchReviewsProduct,
-} from '../../storage/slices/detailProduct/thunk';
-import { RequestStatus } from '../../types/store';
-import { Spinner } from '../../components/spinner';
+	detailProductActions,
+	detailProductSelectors,
+} from '../../storage/slices/detailProduct';
+import React, { useState } from 'react';
 import { ErrorPage } from '../ErrorPage';
 import {
 	BodyText,
@@ -19,7 +15,12 @@ import {
 	MultipleImageUpload,
 } from '../../components/ui';
 import { Rating, SvgIcon } from '@mui/material';
-import { LeftArrowIcon } from '../../images';
+import { LeftArrowIcon } from '../../assets/images';
+import {
+	useAddReviewProductByIdMutation,
+	useGetAverageRatingForProductQuery,
+} from '../../api/products';
+import { IAddReview } from '../../api/interfaces';
 
 export const AddReview = () => {
 	const dispatch = useAppDispatch();
@@ -27,11 +28,13 @@ export const AddReview = () => {
 	const navigate = useNavigate();
 
 	const { productId } = useParams<{ productId: string }>();
-	const product = useAppSelector(detailProductSelectors.getInfo);
-	const status = useAppSelector(detailProductSelectors.getStatus);
+	const product = useAppSelector(detailProductSelectors.getProduct);
+	const [addNewReview] = useAddReviewProductByIdMutation();
+	const { refetch: refetchAverageRating } = useGetAverageRatingForProductQuery(
+		productId || ''
+	);
 
 	const [ratingValue, setRatingValue] = useState<number | null>(null);
-
 	const [reviewText, setReviewText] = useState('');
 	const handleReviewTextChange = (
 		event: React.ChangeEvent<HTMLTextAreaElement>
@@ -49,47 +52,36 @@ export const AddReview = () => {
 		setUploadedFiles(newFiles);
 	};
 
-	const handleBackClick = () => {
-		if (location.state && location.state.from) {
-			navigate(location.state.from);
-		} else {
-			navigate('/catalog');
-		}
-	};
-	useEffect(() => {
-		if (productId) {
-			dispatch(fetchDetailProduct(productId));
-			dispatch(fetchReviewsProduct(productId));
-		}
-	}, [dispatch, productId]);
+	const handleBackClick = () =>
+		navigate(location?.state?.from ? location.state.from : '/catalog');
 
 	const handleSubmitReview = () => {
 		if (productId && ratingValue !== null && reviewText.trim() !== '') {
-			const review = {
+			const review: IAddReview = {
 				rating: ratingValue,
 				text: reviewText,
 			};
-
-			dispatch(
-				fetchAddReviewProductById({
-					productId,
-					review,
+			addNewReview({ productId, review })
+				.then((result) => {
+					if (!('error' in result)) {
+						setRatingValue(null);
+						setReviewText('');
+						setUploadedFiles([]);
+						refetchAverageRating()
+							.unwrap()
+							.then((updatedAverageRating) => {
+								dispatch(
+									detailProductActions.setAverageRating(updatedAverageRating)
+								);
+							});
+					}
 				})
-			).then(() => {
-				setRatingValue(null);
-				setReviewText('');
-				setUploadedFiles([]);
-			});
+				.catch((error) => {
+					alert('Error adding review: ' + error);
+				});
 		}
 	};
 
-	if (status === RequestStatus.Loading) {
-		return <Spinner />;
-	}
-
-	if (status === RequestStatus.Failed) {
-		return <ErrorPage />;
-	}
 	return (
 		<div className={s.wrapper}>
 			<div className={s.wrapper_header}>

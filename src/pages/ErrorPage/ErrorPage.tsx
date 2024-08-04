@@ -1,5 +1,5 @@
 import { SvgIcon, useMediaQuery } from '@mui/material';
-import { NotFoundIcon } from '../../images';
+import { NotFoundIcon } from '../../assets/images';
 import { BodyText, HeaderText } from '../../components/ui';
 import './errorPageStyled.scss';
 

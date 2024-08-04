@@ -1,4 +1,4 @@
-import { LogoIcon } from '../../images';
+import { LogoIcon } from '../../assets/images';
 import './styles.scss';
 import { SvgIcon, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';

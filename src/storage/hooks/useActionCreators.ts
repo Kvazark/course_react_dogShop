@@ -14,7 +14,6 @@ export const useActionCreators = <Actions extends ActionCreatorsMapObject>(
 	return useMemo(() => bindActionCreators(actions, dispatch), []);
 };
 
-/////TODO
 type BoundActions<Actions extends ActionCreatorsMapObject> = {
 	[key in keyof Actions]: Actions[key] extends AsyncThunk<any, any, any>
 		? BoundAsyncThunk<Actions[key]>

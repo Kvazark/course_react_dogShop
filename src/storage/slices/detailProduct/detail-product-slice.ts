@@ -1,69 +1,38 @@
-import { RequestStatus } from '../../../types/store';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { isActionPending, isActionRejected } from '../../../utils';
-import {
-	fetchAddReviewProductById,
-	fetchAverageRatingProduct,
-	fetchDetailProduct,
-	fetchReviewsProduct,
-} from './thunk';
-import { AverageRating } from '../../../utils/api/productsApi';
+import { IAverageRating } from '../../../api/interfaces';
 
 interface DetailProductState {
 	info: IProduct | null;
-	rating: AverageRating | null;
+	rating: IAverageRating | null;
 	reviews: IReview[] | null;
-	status: RequestStatus;
 }
 
-const initialState: DetailProductState = {
+const createInitialState = (): DetailProductState => ({
 	info: null,
 	rating: null,
 	reviews: null,
-	status: RequestStatus.Idle,
-};
+});
 
-const USER_SLICE_NAME = 'detail-product';
+const PRODUCT_SLICE_NAME = 'detail-product';
 export const detailProductSlice = createSlice({
-	name: USER_SLICE_NAME,
-	initialState,
+	name: PRODUCT_SLICE_NAME,
+	initialState: createInitialState(),
 	reducers: {
-		update: (state, action: PayloadAction<IProduct>) => {
+		setProduct: (state, action: PayloadAction<IProduct>) => {
 			state.info = action.payload;
 		},
+		setAverageRating: (state, action: PayloadAction<IAverageRating>) => {
+			state.rating = action.payload;
+		},
+		setReviews: (state, action: PayloadAction<IReview[]>) => {
+			state.reviews = action.payload;
+		},
 	},
-	extraReducers: (builder) => {
-		builder
-			.addCase(fetchDetailProduct.fulfilled, (state, action) => {
-				state.info = action.payload;
-				state.status = RequestStatus.Success;
-			})
-			.addCase(fetchAverageRatingProduct.fulfilled, (state, action) => {
-				state.rating = action.payload;
-				state.status = RequestStatus.Success;
-			})
-			.addCase(fetchReviewsProduct.fulfilled, (state, action) => {
-				state.reviews = action.payload;
-				state.status = RequestStatus.Success;
-			})
-			.addCase(fetchAddReviewProductById.fulfilled, (state) => {
-				state.status = RequestStatus.Success;
-			})
-			.addCase(fetchDetailProduct.rejected, (state) => {
-				state.info = null;
-			})
-			.addMatcher(isActionPending(detailProductSlice.name), (state) => {
-				state.status = RequestStatus.Loading;
-			})
-			.addMatcher(isActionRejected(detailProductSlice.name), (state) => {
-				state.status = RequestStatus.Failed;
-			});
-	},
-
 	selectors: {
-		getInfo: (state: DetailProductState) => state.info,
-		getStatus: (state: DetailProductState) => state.status,
+		getProduct: (state: DetailProductState) => state.info,
 		getReviews: (state: DetailProductState) => state.reviews,
 		getAverageRating: (state: DetailProductState) => state.rating,
 	},
 });
+export const { setProduct, setAverageRating, setReviews } =
+	detailProductSlice.actions;

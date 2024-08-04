@@ -1,5 +1,5 @@
 import './cardStyled.scss';
-import { Button } from '../ui';
+import { BodyText, Button } from '../ui';
 import { Link, useLocation } from 'react-router-dom';
 import { IconCard } from './ui/IconCard';
 import React from 'react';
@@ -43,13 +43,25 @@ export const Card = ({
 			<div className='card-wrapper_img-box'>
 				<div className='card-wrapper_img-box_labels'>
 					{product.discount !== 0 && product.discount !== null && (
-						<div className='label'>-{product.discount}%</div>
+						<div className='label'>
+							<BodyText
+								text={`-${product.discount}%`}
+								size='p1'
+								fontWeight='800'
+								color='var(--white-color)'
+							/>
+						</div>
 					)}
 					{product.tags.length !== 0 && (
 						<>
 							{product.tags.map((item, index) => (
 								<div className='label' key={`${index}-tag`}>
-									{item}
+									<BodyText
+										text={item}
+										size='p1'
+										fontWeight='800'
+										color='var(--white-color)'
+									/>
 								</div>
 							))}
 						</>

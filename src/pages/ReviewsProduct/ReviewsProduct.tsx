@@ -1,17 +1,8 @@
 import s from './reviewsProduct.module.scss';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch } from '../../storage/hooks';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
 import { detailProductSelectors } from '../../storage/slices/detailProduct';
-import { RequestStatus } from '../../types/store';
-import { Spinner } from '../../components/spinner';
-import { ErrorPage } from '../ErrorPage';
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-	fetchAverageRatingProduct,
-	fetchDetailProduct,
-	fetchReviewsProduct,
-} from '../../storage/slices/detailProduct/thunk';
 import {
 	BodyText,
 	Button,
@@ -19,12 +10,12 @@ import {
 	StarRatingIcons,
 } from '../../components/ui';
 import { SvgIcon } from '@mui/material';
-import { CommentsIcon, LeftArrowIcon } from '../../images';
+import { CommentsIcon, LeftArrowIcon } from '../../assets/images';
 import { ReviewsDetailCard } from '../../components/detailCard';
 import { declensionWords } from '../../utils';
+import { withProtection } from '../../HOCs/withProtection';
 
-export const ReviewsProduct = () => {
-	const dispatch = useAppDispatch();
+export const ReviewsProduct = withProtection(() => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -35,8 +26,7 @@ export const ReviewsProduct = () => {
 	}, [location.pathname]);
 
 	const { productId } = useParams<{ productId: string }>();
-	const product = useAppSelector(detailProductSelectors.getInfo);
-	const status = useAppSelector(detailProductSelectors.getStatus);
+	const product = useAppSelector(detailProductSelectors.getProduct);
 	const averageRating = useAppSelector(detailProductSelectors.getAverageRating);
 	const reviewsProduct = useAppSelector(detailProductSelectors.getReviews);
 
@@ -47,13 +37,6 @@ export const ReviewsProduct = () => {
 			navigate('/catalog');
 		}
 	};
-	useEffect(() => {
-		if (productId) {
-			dispatch(fetchDetailProduct(productId));
-			dispatch(fetchReviewsProduct(productId));
-			dispatch(fetchAverageRatingProduct(productId));
-		}
-	}, [dispatch, productId]);
 
 	const handleAddReview = () => {
 		navigate(`/product/${productId}/addReviews`, { state: { from } });
@@ -72,14 +55,6 @@ export const ReviewsProduct = () => {
 	const currentPrice = product
 		? Math.round((product?.price * (100 - product?.discount)) / 100)
 		: '';
-
-	if (status === RequestStatus.Loading) {
-		return <Spinner />;
-	}
-
-	if (status === RequestStatus.Failed) {
-		return <ErrorPage />;
-	}
 
 	return (
 		<div className={s.wrapper}>
@@ -153,4 +128,4 @@ export const ReviewsProduct = () => {
 			<ReviewsDetailCard />
 		</div>
 	);
-};
+});

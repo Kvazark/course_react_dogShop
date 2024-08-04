@@ -1,19 +1,22 @@
-import { FavoritesFillIcon, FavoritesIcon, TrashIcon } from '../../../images';
+import {
+	FavoritesFillIcon,
+	FavoritesIcon,
+	TrashIcon,
+} from '../../../assets/images';
 import { SvgIcon } from '@mui/material';
 import '../cardStyled.scss';
 import { isLiked } from '../../../utils/product';
-import { useActionCreators } from '../../../storage/hooks/useActionCreators';
-import { productsActions } from '../../../storage/slices/products';
 import { useAppSelector } from '../../../storage/hooks/useAppSelector';
 import { userSelectors } from '../../../storage/slices/user';
+import { useSetLikeProductMutation } from '../../../api/products';
 
 type TIconCard = {
 	product: IProduct;
 	variant: 'delete' | 'favorite';
 };
 export const IconCard = ({ product, variant }: TIconCard) => {
-	const { fetchChangeLikeProduct } = useActionCreators(productsActions);
 	const currentUser = useAppSelector(userSelectors.getUser);
+	const [setLikeProductRequestFn] = useSetLikeProductMutation();
 	const like = isLiked(product.likes, currentUser?.id);
 
 	return (
@@ -25,7 +28,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 						event.preventDefault();
 						event.stopPropagation();
 						product.likes &&
-							fetchChangeLikeProduct({ id: product.id, likes: product.likes });
+							setLikeProductRequestFn({ like, productId: product.id }).unwrap();
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>
@@ -36,7 +39,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 						event.preventDefault();
 						event.stopPropagation();
 						product.likes &&
-							fetchChangeLikeProduct({ id: product.id, likes: product.likes });
+							setLikeProductRequestFn({ like, productId: product.id }).unwrap();
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>

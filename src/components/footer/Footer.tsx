@@ -8,11 +8,14 @@ import {
 	ViberIcon,
 	VkIcon,
 	WhatsappIcon,
-} from '../../images';
+} from '../../assets/images';
 import { FooterLinks, FooterMenu } from './ui';
 import { listLinks, menuItems } from './constData';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../storage/slices/user';
 
 export const Footer = () => {
+	const accessToken = useAppSelector(userSelectors.accessTokenSelector);
 	const isSmallScreen = useMediaQuery('(max-width:800px)');
 	return (
 		<Box
@@ -28,12 +31,16 @@ export const Footer = () => {
 						<BodyText text='© «Интернет-магазин DogFood.ru»' size='s2' />
 					</div>
 				)}
-				<div className='footer-wrapper_links'>
-					<FooterLinks links={listLinks.slice(0, 4)} />
-				</div>
-				<div className='footer-wrapper_links'>
-					<FooterLinks links={listLinks.slice(4, 8)} />
-				</div>
+				{accessToken && (
+					<>
+						<div className='footer-wrapper_links'>
+							<FooterLinks links={listLinks.slice(0, 4)} />
+						</div>
+						<div className='footer-wrapper_links'>
+							<FooterLinks links={listLinks.slice(4, 8)} />
+						</div>
+					</>
+				)}
 				<div className='footer-wrapper_networks'>
 					<BodyText text='Мы на связи' size='p1' fontWeight='700' />
 					<Box>

@@ -8,18 +8,18 @@ import {
 	SvgIcon,
 	useMediaQuery,
 } from '@mui/material';
-import { LeftArrowIcon, RightArrowIcon } from '../../images';
+import { LeftArrowIcon, RightArrowIcon } from '../../assets/images';
 import { Button } from '../ui';
 import { usePagination } from '../../hooks';
-import { productsSelectors } from '../../storage/slices/products';
-import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { withQuery } from '../../HOCs/withQuery';
 
-const PER_PAGE = 6;
-export const CardList = () => {
-	const products = useAppSelector(productsSelectors.getProduct);
+interface ICardListProps {
+	products: IProduct[];
+}
 
+export const CardList = withQuery(({ products }: ICardListProps) => {
 	const { currentPage, getCurrentData, setPagePaginated, countPages } =
-		usePagination<IProduct>(products, PER_PAGE);
+		usePagination<IProduct>(products, 6);
 
 	function handlePageChange(_: ChangeEvent<unknown>, page: number) {
 		setPagePaginated(page);
@@ -76,4 +76,4 @@ export const CardList = () => {
 			/>
 		</div>
 	);
-};
+});

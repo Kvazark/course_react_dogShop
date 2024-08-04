@@ -1,1 +1,1 @@
-export { Profile } from './Prodile';
+export { Profile } from './Profile';

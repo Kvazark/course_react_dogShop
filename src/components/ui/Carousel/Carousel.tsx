@@ -14,7 +14,7 @@ type TCarouselProps = {
 	title: string;
 };
 export const CustomCarousel = ({ title }: TCarouselProps) => {
-	const recentlyViewed = useAppSelector(productsSelectors.getProduct);
+	const recentlyViewed = useAppSelector(productsSelectors.getProducts);
 
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const isSmallScreen = useMediaQuery('(max-width:600px)');

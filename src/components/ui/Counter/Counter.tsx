@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, SvgIcon } from '@mui/material';
-import { MinusIcon, PlusIcon } from '../../../images';
+import { MinusIcon, PlusIcon } from '../../../assets/images';
 import { HeaderText } from '../Texts';
 import { Button } from '../index';
 

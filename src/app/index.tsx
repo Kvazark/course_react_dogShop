@@ -2,19 +2,25 @@ import '../global.scss';
 import { Outlet } from 'react-router-dom';
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { useEffect } from 'react';
 import './appStyled.scss';
 import { useActionCreators } from '../storage/hooks/useActionCreators';
-import { userActions } from '../storage/slices/user';
+import { useGetProductsQuery } from '../api/products';
 import { productsActions } from '../storage/slices/products';
+import { useEffect } from 'react';
+import { useGetUserQuery } from '../api/user';
+import { userActions } from '../storage/slices/user';
 
 export const App = () => {
-	const { fetchUser } = useActionCreators(userActions);
-	const { fetchProducts } = useActionCreators(productsActions);
+	const { data: currentUser } = useGetUserQuery();
+	const { data: dataProducts } = useGetProductsQuery({});
+	const { setUser } = useActionCreators(userActions);
+	const { setProducts } = useActionCreators(productsActions);
 
 	useEffect(() => {
-		fetchProducts({});
-		fetchUser();
+		if (currentUser) {
+			setUser(currentUser);
+		}
+		if (dataProducts) setProducts(dataProducts);
 	});
 
 	return (

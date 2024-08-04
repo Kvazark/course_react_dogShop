@@ -1,4 +1,8 @@
-import { EmptyStarIcon, FillStarIcon, HalfStarIcon } from '../../../images';
+import {
+	EmptyStarIcon,
+	FillStarIcon,
+	HalfStarIcon,
+} from '../../../assets/images';
 import { SvgIcon } from '@mui/material';
 
 type RatingProps = {
@@ -18,8 +22,8 @@ export const StarRatingIcons = ({
 
 	const getStyled = () => {
 		return {
-			width: width ? width : '24px',
-			height: width ? width : '24px',
+			width: width || '24px',
+			height: width || '24px',
 		};
 	};
 

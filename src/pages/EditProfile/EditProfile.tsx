@@ -1,68 +1,72 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useAppSelector } from '../../storage/hooks/useAppSelector';
-import { userSelectors } from '../../storage/slices/user';
 import { useEffect, useState } from 'react';
 import { useAppDispatch } from '../../storage/hooks';
-import { RequestStatus } from '../../types/store';
-import { Spinner } from '../../components/spinner';
-import { ErrorPage } from '../ErrorPage';
-import { fetchEditUser, fetchUser } from '../../storage/slices/user/thunk';
 import { BodyText, Button, HeaderText } from '../../components/ui';
 import { SvgIcon, TextField } from '@mui/material';
-import { LeftArrowIcon } from '../../images';
+import { LeftArrowIcon } from '../../assets/images';
 import s from './editProfile.module.scss';
+import { userSlice } from '../../storage/slices/user/user-slice';
+import { withProtection } from '../../HOCs/withProtection';
+import {
+	useGetUserQuery,
+	UserUpdateDto,
+	useUpdateUserMutation,
+} from '../../api/user';
+import { useAppSelector } from '../../storage/hooks/useAppSelector';
+import { userSelectors } from '../../storage/slices/user';
 
-export const EditProfile = () => {
+export const EditProfile = withProtection(() => {
 	const dispatch = useAppDispatch();
+	const [toUpdateUser] = useUpdateUserMutation();
+
 	const location = useLocation();
 	const navigate = useNavigate();
-	const currentUser = useAppSelector(userSelectors.getUser);
-	const status = useAppSelector(userSelectors.getUserStatus);
+	const user = useAppSelector(userSelectors.getUser);
+	const { refetch } = useGetUserQuery();
+
+	const [formData, setFormData] = useState({
+		firstName: '',
+		lastName: '',
+		phone: '',
+		email: '',
+	});
+
+	const handleBackClick = () =>
+		navigate(location?.state?.from ? location.state.from : '/');
 
 	useEffect(() => {
-		if (currentUser) {
-			dispatch(fetchUser());
+		if (user) {
+			const [firstName, lastName] = (user?.name || '').split(' ') || ['', ''];
+			setFormData({
+				firstName: firstName || '',
+				lastName: lastName || '',
+				phone: user.phone || '',
+				email: user.email || '',
+			});
 		}
-	}, [dispatch]);
-
-	const [firstName, setFirstName] = useState('');
-	const [lastName, setLastName] = useState('');
-	const [phone, setPhone] = useState('');
-	const [email, setEmail] = useState('');
-
-	const handleBackClick = () => {
-		if (location.state && location.state.from) {
-			navigate(location.state.from);
-		} else {
-			navigate('/');
-		}
-	};
-
-	useEffect(() => {
-		if (currentUser) {
-			const [firstName, lastName] = (currentUser?.name || '').split(' ') || [
-				'',
-				'',
-			];
-			setFirstName(firstName || '');
-			setLastName(lastName || '');
-			setPhone(currentUser.phone || '');
-			setEmail(currentUser.email || '');
-		}
-	}, [currentUser]);
+	}, [user]);
 
 	const handleSaveInfo = async () => {
-		const name = firstName + ' ' + lastName;
-		const userData = { ...currentUser, email: email, name: name, phone: phone };
-		dispatch(fetchEditUser(userData));
-	};
-	if (status === RequestStatus.Loading) {
-		return <Spinner />;
-	}
+		const name = formData.firstName + ' ' + formData.lastName;
+		const userData: UserUpdateDto = {
+			email: formData.email,
+			name,
+			phone: formData.phone,
+		};
 
-	if (status === RequestStatus.Failed) {
-		return <ErrorPage />;
-	}
+		try {
+			await toUpdateUser(userData).unwrap();
+			dispatch(userSlice.actions.updateUserInfo(userData));
+			await refetch();
+			alert('Данные успешно обновились!');
+		} catch (error) {
+			alert('Ошибка при обновлении данных пользователя:' + error);
+		}
+	};
+
+	const handleInputChange = (field: string, value: string) => {
+		setFormData((prevState) => ({ ...prevState, [field]: value }));
+	};
 
 	return (
 		<div className={s.wrapper}>
@@ -86,32 +90,32 @@ export const EditProfile = () => {
 						label='Имя'
 						multiline
 						maxRows={4}
-						value={firstName}
-						onChange={(e) => setFirstName(e.target.value)}
+						value={formData.firstName}
+						onChange={(e) => handleInputChange('firstName', e.target.value)}
 						placeholder='Введите своё имя'
 					/>
 					<TextField
 						label='Фамилия'
 						multiline
 						maxRows={4}
-						value={lastName}
-						onChange={(e) => setLastName(e.target.value)}
+						value={formData.lastName}
+						onChange={(e) => handleInputChange('lastName', e.target.value)}
 						placeholder='Введите свою фамилию'
 					/>
 					<TextField
 						label='Телефон'
 						multiline
 						maxRows={4}
-						value={phone}
-						onChange={(e) => setPhone(e.target.value)}
-						// placeholder='Имя'
+						value={formData.phone}
+						onChange={(e) => handleInputChange('phone', e.target.value)}
+						placeholder='Введите номер телефона'
 					/>
 					<TextField
 						label='Почта'
 						multiline
 						maxRows={4}
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
+						value={formData.email}
+						onChange={(e) => handleInputChange('email', e.target.value)}
 						placeholder='Введите почту'
 					/>
 				</div>
@@ -134,10 +138,11 @@ export const EditProfile = () => {
 						placeholder='Новый пароль'
 					/>
 				</div>
+				{/*Здесь нуен div, чтобы кнопка не была на всю ширину s.wrapper_content*/}
 				<div>
 					<Button label='Сохранить' view='outlined' />
 				</div>
 			</div>
 		</div>
 	);
-};
+});

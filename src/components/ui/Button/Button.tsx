@@ -10,6 +10,7 @@ type TButtonProps = {
 	disabled?: boolean;
 	stretch?: boolean;
 	onClick?: () => void;
+	type?: 'submit' | 'reset' | 'button';
 };
 export const CustomButton = ({
 	label,
@@ -19,6 +20,7 @@ export const CustomButton = ({
 	disabled,
 	stretch,
 	onClick,
+	type,
 }: TButtonProps) => {
 	const getButtonStyles = () => {
 		switch (view) {
@@ -73,6 +75,7 @@ export const CustomButton = ({
 		<Button
 			onClick={onClick}
 			disabled={disabled}
+			type={type}
 			sx={{
 				display: 'flex',
 				gap: '8px',
