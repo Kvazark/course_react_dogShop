@@ -13,16 +13,30 @@ export const productsApi = createApi({
 	baseQuery: customBaseQuery,
 	tagTypes: ['Products', 'Product'],
 	endpoints: (builder) => ({
-		getProducts: builder.query<IProductListResponse, object>({
-			query: () => ({
+		getProducts: builder.query<IProductListResponse, ProductsSearchFilter>({
+			query: ({ page, searchTerm }) => ({
 				url: '/products',
 				params: {
 					sort: 'newest',
-					searchTerm: '',
-					perPage: 12,
-					page: 1,
+					searchTerm,
+					perPage: 6,
+					page,
 				},
 			}),
+			serializeQueryArgs: ({ endpointName, queryArgs: { searchTerm } }) => {
+				return endpointName + searchTerm;
+			},
+			merge: (currentCache, response, { arg: { page } }) => {
+				if (page === 1) {
+					currentCache = response;
+					return;
+				}
+				currentCache.products.push(...response.products);
+			},
+			forceRefetch: ({ currentArg, previousArg }) => {
+				return currentArg?.page !== previousArg?.page;
+			},
+
 			providesTags: [{ type: 'Products', id: 'LIST' }],
 		}),
 		getProduct: builder.query<IProduct, string>({

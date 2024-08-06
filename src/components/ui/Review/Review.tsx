@@ -32,8 +32,6 @@ export const Review = ({ review }: TReviewProps) => {
 				</div>
 				{review.product.images && (
 					<div className={s.reviewContainer_photos}>
-						{/*/Вы писали, что здесь лишняя обвёртка может быть, но я это сделала,
-						потому что по макету здесь подразумевается массив картинок */}
 						<div className={s.reviewContainer_photos_container}>
 							<img src={review.product.images} alt='reviewPhoto' />
 						</div>

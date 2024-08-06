@@ -28,7 +28,9 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 	const currentUser = useAppSelector(userSelectors.getUser);
 	const [setLikeProductRequestFn] = useSetLikeProductMutation();
 
+	///на будущее для корзины сделала, потому что компонент Counter принимает пропс колбэк onGetCounter
 	const [counter, setCounter] = useState(0);
+	///eslint ругается на неиспользование переменной counter. До 6 дз сделала временно так
 	console.log(counter);
 
 	if (!product) {
@@ -114,12 +116,7 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 						onClick={(event) => {
 							event.preventDefault();
 							event.stopPropagation();
-							product.likes &&
-								// setLikeProductRequestFn({
-								// 	like,
-								// 	productId: product.id,
-								// }).unwrap();
-								handleLikeClick();
+							product.likes && handleLikeClick();
 						}}
 					/>
 					<BodyText

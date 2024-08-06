@@ -6,30 +6,65 @@ import { BodyText, Button, Carousel, HeaderText } from '../../components/ui';
 import { Sort } from '../../components/sort';
 import { declensionWords } from '../../utils';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
-import { productsSelectors } from '../../storage/slices/products';
+import {
+	productsActions,
+	productsSelectors,
+} from '../../storage/slices/products';
 import { withProtection } from '../../HOCs/withProtection';
 import { useGetProductsQuery } from '../../api/products';
 import { getMessageFromError } from '../../utils/errorUtils';
 import { userSelectors } from '../../storage/slices/user';
+import { useAppDispatch } from '../../storage/hooks';
+import { useCallback, useEffect, useState } from 'react';
+import { LoadMore } from '../../components/LoadMore';
+import { productsSlice } from '../../storage/slices/products/products-slice';
 
 export const Catalog = withProtection(() => {
-	const searchTerm = useAppSelector(productsSelectors.getSearchTerm);
+	const dispatch = useAppDispatch();
+
+	const [searchValue, setSearchValue] = useState<ProductsSearchFilter>({
+		searchTerm: '',
+		page: 1,
+	});
+
+	const currentSearchFilter = useAppSelector(productsSelectors.getSearchFilter);
 	const products = useAppSelector(productsSelectors.getProducts);
 	const user = useAppSelector(userSelectors.getUser);
 
-	const { data, isError, isLoading, error, refetch } = useGetProductsQuery(
-		{},
-		{
+	const { data, isError, isLoading, isFetching, error, refetch } =
+		useGetProductsQuery(searchValue, {
 			skip: !user?.id,
-		}
-	);
+		});
 
-	console.log(products);
+	const isEndOfList = data && data.products.length >= data.length;
+
+	const loadMoreProducts = useCallback(() => {
+		if (!isEndOfList)
+			setSearchValue((prev) => ({ ...prev, page: prev.page + 1 }));
+	}, [isEndOfList]);
+
+	useEffect(() => {
+		if (data) {
+			dispatch(
+				productsSlice.actions.setProducts({
+					products: data.products,
+					length: data.length,
+				})
+			);
+			dispatch(productsActions.setSearchFilter(searchValue));
+		}
+	}, [data, dispatch, searchValue]);
+
+	useEffect(() => {
+		if (currentSearchFilter.searchTerm !== searchValue.searchTerm) {
+			setSearchValue(currentSearchFilter);
+		}
+	}, [currentSearchFilter, searchValue]);
 
 	return (
 		<div className='catalog-wrapper'>
 			<div className='catalog-wrapper_header'>
-				{searchTerm ? (
+				{searchValue.searchTerm ? (
 					<Typography
 						sx={{
 							fontSize: '28px',
@@ -38,7 +73,7 @@ export const Catalog = withProtection(() => {
 								fontWeight: '800',
 							},
 						}}>
-						По запросу <span>{searchTerm}</span> найдено{' '}
+						По запросу <span>{searchValue.searchTerm}</span> найдено{' '}
 						{declensionWords(products.length, ['товар', 'товара', 'товаров'])}
 					</Typography>
 				) : (
@@ -68,7 +103,14 @@ export const Catalog = withProtection(() => {
 					products={data?.products ?? []}
 				/>
 			)}
-			{searchTerm.length > 0 && products.length === 0 && (
+			{!!data?.products?.length && (
+				<LoadMore
+					isLoading={isFetching}
+					action={loadMoreProducts}
+					isEndOfList={isEndOfList}
+				/>
+			)}
+			{searchValue.searchTerm.length > 0 && products.length === 0 && (
 				<Box
 					sx={{
 						display: 'flex',
@@ -100,7 +142,7 @@ export const Catalog = withProtection(() => {
 					</Box>
 				</Box>
 			)}
-			{searchTerm.length === 0 && <Carousel title='Вы смотрели' />}
+			{searchValue.searchTerm.length === 0 && <Carousel title='Вы смотрели' />}
 		</div>
 	);
 });

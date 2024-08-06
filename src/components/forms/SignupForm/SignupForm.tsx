@@ -1,6 +1,6 @@
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useSignUpMutation } from '../../../storage/api/authApi';
+import { useSignUpMutation } from '../../../api/authApi';
 import { SignUpFormValues } from './types';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,6 +50,7 @@ export const SignUpForm = () => {
 	};
 
 	return (
+		///обвёртка не лишняя, т.к. органичивает ширину Box и делает контент по центру
 		<Container component='main' maxWidth='xs'>
 			<Box
 				sx={{
