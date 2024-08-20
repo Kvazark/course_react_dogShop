@@ -13,14 +13,36 @@ export const productsApi = createApi({
 	baseQuery: customBaseQuery,
 	tagTypes: ['Products', 'Product'],
 	endpoints: (builder) => ({
-		getProducts: builder.query<IProductListResponse, object>({
+		getProducts: builder.query<IProductListResponse, ProductsSearchFilter>({
+			query: ({ page, searchTerm }) => ({
+				url: '/products',
+				params: {
+					sort: 'newest',
+					searchTerm,
+					perPage: 6,
+					page,
+				},
+			}),
+			serializeQueryArgs: ({ endpointName, queryArgs: { searchTerm } }) => {
+				return endpointName + searchTerm;
+			},
+			merge: (currentCache, response, { arg: { page } }) => {
+				page === 1
+					? (currentCache = response)
+					: currentCache.products.push(...response.products);
+			},
+			forceRefetch: ({ currentArg, previousArg }) => {
+				return currentArg?.page !== previousArg?.page;
+			},
+
+			providesTags: [{ type: 'Products', id: 'LIST' }],
+		}),
+		getProductsWithoutPage: builder.query<IProductListResponse, object>({
 			query: () => ({
 				url: '/products',
 				params: {
 					sort: 'newest',
 					searchTerm: '',
-					perPage: 12,
-					page: 1,
 				},
 			}),
 			providesTags: [{ type: 'Products', id: 'LIST' }],
@@ -29,7 +51,7 @@ export const productsApi = createApi({
 			query: (id) => ({
 				url: `/products/${id}`,
 			}),
-			providesTags: (response) => [{ type: 'Products', id: response?.id }],
+			providesTags: (response) => [{ type: 'Product', id: response?.id }],
 		}),
 		setLikeProduct: builder.mutation<IProduct[], IProductLikeDto>({
 			query: ({ like, productId }) => ({
@@ -89,6 +111,7 @@ export const productsApi = createApi({
 
 export const {
 	useGetProductsQuery,
+	useGetProductsWithoutPageQuery,
 	useGetProductQuery,
 	useSetLikeProductMutation,
 	useGetReviewsProductByIdQuery,

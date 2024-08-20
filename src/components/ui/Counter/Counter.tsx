@@ -8,6 +8,7 @@ type TCounterProps = {
 	initialValue?: number;
 	onGetCounter: (value: number) => void;
 	width?: string;
+	minValue?: number;
 	maxValue?: number;
 };
 
@@ -15,6 +16,7 @@ export const Counter = ({
 	initialValue,
 	onGetCounter,
 	width,
+	minValue,
 	maxValue,
 }: TCounterProps) => {
 	const [counter, setCounter] = useState(initialValue || 0);
@@ -49,14 +51,16 @@ export const Counter = ({
 							height: '24px',
 							'& path:nth-of-type(1)': {
 								fill:
-									counter === 0 ? 'var(--text-secondary)' : 'var(--text-main)',
+									counter === 0 || counter === minValue
+										? 'var(--text-secondary)'
+										: 'var(--text-main)',
 							},
 						}}
 					/>
 				}
 				view='transparent'
 				onClick={handleDecrement}
-				disabled={counter === 0}
+				disabled={counter === 0 || counter === minValue}
 			/>
 			<HeaderText text={counter} size='h3' />
 			<Button

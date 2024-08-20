@@ -1,22 +1,28 @@
 import s from './bodyDetailCard.Styled.module.scss';
 import { SvgIcon } from '@mui/material';
+import { FavoritesFillIcon, FavoritesIcon } from '../../../assets/images';
 import {
-	FavoritesFillIcon,
-	FavoritesIcon,
-	QualityIcon,
-	TruckIcon,
-} from '../../../assets/images';
-import { BodyText, Button, Counter, HeaderText } from '../../ui';
+	BodyText,
+	Button,
+	Counter,
+	HeaderText,
+	PlaceholderCard,
+} from '../../ui';
 import React, { useState } from 'react';
 import { isLiked } from '../../../utils/product';
 import { useAppSelector } from '../../../storage/hooks/useAppSelector';
-import { userSelectors } from '../../../storage/slices/user';
+import { userActions, userSelectors } from '../../../storage/slices/user';
 import {
 	useGetProductQuery,
 	useSetLikeProductMutation,
 } from '../../../api/products';
-import { changeLike } from '../../../storage/slices/products/products-slice';
+import {
+	changeLike,
+	updateProduct,
+} from '../../../storage/slices/products/products-slice';
 import { useAppDispatch } from '../../../storage/hooks';
+import { useGetUserQuery } from '../../../api/user';
+import { cartActions, cartSelectors } from '../../../storage/slices/cart';
 
 type TBodyDetailCardProps = {
 	productProps: IProduct;
@@ -25,11 +31,15 @@ type TBodyDetailCardProps = {
 export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 	const dispatch = useAppDispatch();
 	const { data: product, refetch } = useGetProductQuery(productProps.id);
-	const currentUser = useAppSelector(userSelectors.getUser);
+	const { data: currentUser, refetch: refetchUser } = useGetUserQuery();
 	const [setLikeProductRequestFn] = useSetLikeProductMutation();
 
+	const countFavorites = useAppSelector(userSelectors.getLikedProductsCount);
+	const cartItemCount = useAppSelector((state) =>
+		cartSelectors.getCartItemCount(state, productProps.id)
+	);
+
 	const [counter, setCounter] = useState(0);
-	console.log(counter);
 
 	if (!product) {
 		return null;
@@ -40,15 +50,43 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 	);
 
 	const like = isLiked(product.likes, currentUser?.id);
+
 	const handleLikeClick = async () => {
 		try {
-			await setLikeProductRequestFn({ like, productId: product?.id }).unwrap();
+			await setLikeProductRequestFn({
+				like: like,
+				productId: product?.id,
+			}).unwrap();
 			await refetch();
+			await refetchUser();
+
+			await dispatch(updateProduct(product));
+
+			const newLikesCount = !like ? countFavorites + 1 : countFavorites - 1;
+			dispatch(userActions.updateLikesCount(newLikesCount));
 			dispatch(changeLike({ productId: product?.id, like: !like }));
 		} catch (error) {
 			alert(`Ошибка при изменении лайка: ${error}`);
 		}
 	};
+
+	console.log(product.stock);
+
+	const handleBtnAddCartClick = () => {
+		if (counter > 0) {
+			const productToAdd = {
+				product: { ...product },
+				transmittedCount: counter,
+			};
+			dispatch(cartActions.addToCart(productToAdd));
+		}
+	};
+
+	const isAddToCartDisabled =
+		product.stock <= 0 ||
+		(cartItemCount && cartItemCount >= product.stock) ||
+		counter === 0 ||
+		cartItemCount + counter >= product.stock;
 
 	return (
 		<div className={s.cardWrapper}>
@@ -100,8 +138,14 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 					/>
 				</div>
 				<div className={s.cardWrapper_description_btns}>
-					<Counter onGetCounter={setCounter} />
-					<Button label='В корзину' view='primary' stretch />
+					<Counter maxValue={product.stock} onGetCounter={setCounter} />
+					<Button
+						label='В корзину'
+						view='primary'
+						stretch
+						onClick={handleBtnAddCartClick}
+						disabled={isAddToCartDisabled || false}
+					/>
 				</div>
 				<div className={s.cardWrapper_description_favorite}>
 					<SvgIcon
@@ -114,12 +158,7 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 						onClick={(event) => {
 							event.preventDefault();
 							event.stopPropagation();
-							product.likes &&
-								// setLikeProductRequestFn({
-								// 	like,
-								// 	productId: product.id,
-								// }).unwrap();
-								handleLikeClick();
+							product.likes && handleLikeClick();
 						}}
 					/>
 					<BodyText
@@ -129,40 +168,8 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 					/>
 				</div>
 				<div className={s.cardWrapper_description_placeholders}>
-					<div className={s.placeholdersWrapper}>
-						<div className={s.placeholdersWrapper_icons}>
-							<SvgIcon component={TruckIcon} sx={{ width: '32px' }} />
-						</div>
-						<div className={s.placeholdersWrapper_description}>
-							<BodyText
-								text='Доставка по всему Миру!'
-								size='p1'
-								fontWeight='700'
-							/>
-							<div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
-								<BodyText text='Доставка курьером —' size='p2' />
-								<BodyText text={'от 399 ₽'} size='p2' fontWeight='700' />
-							</div>
-							<div style={{ display: 'flex', gap: '2px', flexWrap: 'wrap' }}>
-								<BodyText text='Доставка в пункт выдачи —' size='p2' />
-								<BodyText text='от 199 ₽' size='p2' fontWeight='700' />
-							</div>
-						</div>
-					</div>
-					<div className={s.placeholdersWrapper}>
-						<div className={s.placeholdersWrapper_icons}>
-							<SvgIcon component={QualityIcon} sx={{ height: '40px' }} />
-						</div>
-						<div className={s.placeholdersWrapper_description}>
-							<BodyText text='Гарантия качества' size='p1' fontWeight='700' />
-							<BodyText
-								text='Если Вам не понравилось качество нашей продукции,
-							мы вернем деньги, либо сделаем все возможное,
-							чтобы удовлетворить ваши нужды.'
-								size='p2'
-							/>
-						</div>
-					</div>
+					<PlaceholderCard view='delivery' />
+					<PlaceholderCard view='quality' />
 				</div>
 			</div>
 		</div>

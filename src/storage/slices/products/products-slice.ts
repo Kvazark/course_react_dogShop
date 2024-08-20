@@ -3,13 +3,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface ProductsState {
 	products: IProduct[];
 	length: number;
-	searchTerm: string;
+	searchFilter: ProductsSearchFilter;
 }
 
 const createInitialState = (): ProductsState => ({
 	products: [],
 	length: 0,
-	searchTerm: '',
+	searchFilter: {
+		searchTerm: '',
+		page: 1,
+	},
 });
 
 const PRODUCT_SLICE_NAME = 'products';
@@ -17,8 +20,8 @@ export const productsSlice = createSlice({
 	name: PRODUCT_SLICE_NAME,
 	initialState: createInitialState(),
 	reducers: {
-		setSearchTerm(state, action: PayloadAction<string>) {
-			state.searchTerm = action.payload;
+		setSearchFilter(state, action: PayloadAction<ProductsSearchFilter>) {
+			state.searchFilter = action.payload;
 		},
 		setProducts(
 			state,
@@ -28,9 +31,13 @@ export const productsSlice = createSlice({
 			state.length = action.payload.length;
 		},
 		updateProduct(state, action: PayloadAction<IProduct>) {
-			state.products = state.products.map((product) =>
-				product.id === action.payload.id ? action.payload : product
-			);
+			const { id } = action.payload;
+			const index = state.products.findIndex((product) => product.id === id);
+			if (index !== -1) {
+				state.products = state.products.map((product, idx) =>
+					idx === index ? action.payload : product
+				);
+			}
 		},
 		deleteProduct(state, action: PayloadAction<string>) {
 			state.products = state.products.filter(
@@ -52,12 +59,13 @@ export const productsSlice = createSlice({
 	selectors: {
 		getProducts: (state: ProductsState) => state.products,
 		getProductsCount: (state: ProductsState) => state.length,
-		getSearchTerm: (state: ProductsState) => state.searchTerm,
+		getSearchTerm: (state: ProductsState) => state.searchFilter.searchTerm,
+		getSearchFilter: (state: ProductsState) => state.searchFilter,
 	},
 });
 
 export const {
-	setSearchTerm,
+	setSearchFilter,
 	setProducts,
 	updateProduct,
 	deleteProduct,

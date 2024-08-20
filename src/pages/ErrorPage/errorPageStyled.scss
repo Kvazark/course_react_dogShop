@@ -7,9 +7,12 @@
 	gap: 20px;
 
 	svg {
-		width: 250px;
-		height: 250px;
-		fill: var(--text-secondary);
+		width: 180px;
+		height: 180px;
+
+		path {
+			fill: var(--text-outline);
+		}
 	}
 
 	@media screen and (width <= 800px) {

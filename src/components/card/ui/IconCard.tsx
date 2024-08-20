@@ -7,17 +7,54 @@ import { SvgIcon } from '@mui/material';
 import '../cardStyled.scss';
 import { isLiked } from '../../../utils/product';
 import { useAppSelector } from '../../../storage/hooks/useAppSelector';
-import { userSelectors } from '../../../storage/slices/user';
-import { useSetLikeProductMutation } from '../../../api/products';
+import { userActions, userSelectors } from '../../../storage/slices/user';
+import {
+	useGetProductQuery,
+	useSetLikeProductMutation,
+} from '../../../api/products';
+import {
+	changeLike,
+	updateProduct,
+} from '../../../storage/slices/products/products-slice';
+import { useAppDispatch } from '../../../storage/hooks';
+import { useGetUserQuery } from '../../../api/user';
+import { useEffect } from 'react';
 
 type TIconCard = {
 	product: IProduct;
 	variant: 'delete' | 'favorite';
 };
 export const IconCard = ({ product, variant }: TIconCard) => {
-	const currentUser = useAppSelector(userSelectors.getUser);
+	const dispatch = useAppDispatch();
+	const { data: productLocal, refetch } = useGetProductQuery(product?.id);
+	const { data: currentUser, refetch: refetchUser } = useGetUserQuery();
+
 	const [setLikeProductRequestFn] = useSetLikeProductMutation();
 	const like = isLiked(product.likes, currentUser?.id);
+	const countFavorites = useAppSelector(userSelectors.getLikedProductsCount);
+
+	const handleLikeClick = async () => {
+		try {
+			await setLikeProductRequestFn({
+				like: like,
+				productId: product?.id,
+			}).unwrap();
+			await refetch();
+			await refetchUser();
+
+			if (productLocal) await dispatch(updateProduct(productLocal));
+
+			const newLikesCount = !like ? countFavorites + 1 : countFavorites - 1;
+			dispatch(userActions.updateLikesCount(newLikesCount));
+			dispatch(changeLike({ productId: product?.id, like: !like }));
+		} catch (error) {
+			alert(`Ошибка при изменении лайка: ${error}`);
+		}
+	};
+
+	useEffect(() => {
+		refetchUser();
+	}, [dispatch, refetchUser]);
 
 	return (
 		<>
@@ -27,8 +64,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 					onClick={(event) => {
 						event.preventDefault();
 						event.stopPropagation();
-						product.likes &&
-							setLikeProductRequestFn({ like, productId: product.id }).unwrap();
+						product.likes && handleLikeClick();
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>
@@ -38,8 +74,7 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 					onClick={(event) => {
 						event.preventDefault();
 						event.stopPropagation();
-						product.likes &&
-							setLikeProductRequestFn({ like, productId: product.id }).unwrap();
+						product.likes && handleLikeClick();
 					}}
 					className='card-wrapper_img-box_fav-icon'
 				/>

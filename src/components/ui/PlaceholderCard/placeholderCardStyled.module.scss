@@ -1,0 +1,24 @@
+.placeholdersWrapper {
+	display: flex;
+	gap: 12px;
+	padding: 12px;
+	background: var(--text-form);
+	border-radius: 12px;
+
+	&_icons {
+		display: flex;
+		justify-content: center;
+		min-width: 32px;
+	}
+
+	svg {
+		fill: var(--text-secondary);
+		stroke: var(--text-secondary);
+	}
+
+	&_description {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+}

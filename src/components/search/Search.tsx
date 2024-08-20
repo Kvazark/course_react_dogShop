@@ -1,35 +1,43 @@
 import { SearchIcon } from '../../assets/images';
 import './seacrhStyled.scss';
 import { Button } from '../ui';
+import { useProductsSearchForm } from '../../hooks/useProductsSearchForm';
+import { useAppDispatch } from '../../storage/hooks';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { productsActions } from '../../storage/slices/products';
 import React, { useState } from 'react';
-import { useAppSelector } from '../../storage/hooks/useAppSelector';
-// import { useAppDispatch } from '../../storage/hooks';
 
 export const Search = () => {
-	// const dispatch = useAppDispatch();
-	const searchTerm = useAppSelector((state) => state.products.searchTerm);
-	const [currentSearchTerm, setCurrentSearchTerm] = useState(searchTerm);
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const location = useLocation();
 
-	const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const term = e.target.value;
-		if (!term) {
-			//dispatch(fetchProducts({ searchQuery: '' }));
-			//dispatch(productsActions.updateSearchTerm(''));
-		}
-		setCurrentSearchTerm(term);
-	};
+	const [localValue, setLocalValue] = useState('');
+	const { setSearchValue } = useProductsSearchForm({
+		setProductsSearchFilter: (newFilter) => {
+			dispatch(productsActions.setSearchFilter(newFilter));
+		},
+	});
+
 	const handleSearchSubmit = () => {
-		// dispatch(productsActions.updateSearchTerm(currentSearchTerm));
-		// dispatch(productsActions.fetchProducts({ searchQuery: currentSearchTerm }));
+		if (location.pathname !== '/catalog') {
+			if (localValue) setSearchValue(localValue);
+			setTimeout(() => {
+				navigate('/catalog');
+			}, 1000);
+		}
+	};
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (location.pathname === '/catalog') {
+			setSearchValue(e.target.value);
+		}
+		setLocalValue(e.target.value);
 	};
 
 	return (
 		<div className='input-wrapper'>
-			<input
-				placeholder='Поиск'
-				value={currentSearchTerm}
-				onChange={handleSearch}
-			/>
+			<input placeholder='Поиск' value={localValue} onChange={handleChange} />
 			<Button
 				label={<SearchIcon />}
 				view='transparent'

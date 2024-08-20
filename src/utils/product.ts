@@ -2,7 +2,7 @@ export const isLiked = (
 	likes: ILikesInProduct[],
 	userId: string | undefined
 ) => {
-	if (!userId || likes.length === 0) {
+	if (!userId || !likes || likes.length === 0) {
 		return false;
 	}
 

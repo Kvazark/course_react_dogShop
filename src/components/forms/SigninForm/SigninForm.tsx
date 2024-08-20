@@ -9,7 +9,7 @@ import { userActions } from '../../../storage/slices/user';
 import { toast } from 'react-toastify';
 import { getMessageFromError } from '../../../utils/errorUtils';
 import { Box, Container, TextField } from '@mui/material';
-import { useSignInMutation } from '../../../storage/api/authApi';
+import { useSignInMutation } from '../../../api/authApi';
 import { Button, HeaderText } from '../../ui';
 
 export const SignInForm: FC = () => {

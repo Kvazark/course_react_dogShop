@@ -12,6 +12,7 @@ import { FavoritesPage } from './pages/FavoritesPage';
 import { FaqPage } from './pages/FAQ/FaqPage';
 import { SignInPage, SignUpPage } from './pages/Authentication';
 import React from 'react';
+import { Cart } from './pages/CartPage';
 
 export const router = createBrowserRouter([
 	{
@@ -61,6 +62,11 @@ export const router = createBrowserRouter([
 			{
 				path: '/faq',
 				element: <FaqPage />,
+				errorElement: <ErrorPage />,
+			},
+			{
+				path: '/cart',
+				element: <Cart />,
 				errorElement: <ErrorPage />,
 			},
 			{

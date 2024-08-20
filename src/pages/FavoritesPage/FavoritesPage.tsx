@@ -2,29 +2,28 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { BodyText, Button, HeaderText } from '../../components/ui';
 import { LeftArrowIcon } from '../../assets/images';
 import './favoritesStyled.scss';
-import { useCallback } from 'react';
 import { Card } from '../../components/card';
 import { SvgIcon } from '@mui/material';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
-import { userSelectors } from '../../storage/slices/user';
-import { productsSelectors } from '../../storage/slices/products';
 import { withProtection } from '../../HOCs/withProtection';
+import { useEffect, useState } from 'react';
+import { useAppDispatch } from '../../storage/hooks';
+import { userSelectors } from '../../storage/slices/user';
 
 export const FavoritesPage = withProtection(() => {
+	const dispatch = useAppDispatch();
 	const location = useLocation();
 	const navigate = useNavigate();
 
 	const currentUser = useAppSelector(userSelectors.getUser);
-	const products = useAppSelector(productsSelectors.getProducts);
-	console.log(products);
+	const [likedProducts, setLikeProducts] = useState<ILikesByUser[] | undefined>(
+		[]
+	);
 
-	const userLikedProducts = useCallback(() => {
-		return products.filter((product) =>
-			product.likes.some((like) => like.userId === currentUser?.id)
-		);
-	}, [currentUser, products]);
+	useEffect(() => {
+		setLikeProducts(currentUser?.likes || []);
+	}, [currentUser?.likes, dispatch, location, currentUser]);
 
-	console.log(userLikedProducts(), userLikedProducts.length);
 	const handleBackClick = () => {
 		if (location.state && location.state.from) {
 			navigate(location.state.from);
@@ -51,11 +50,11 @@ export const FavoritesPage = withProtection(() => {
 			<div className='favorites-wrapper_content'>
 				<HeaderText text='Избранное' size='h1' />
 				<div className='favorites-wrapper_content_list'>
-					{userLikedProducts ? (
+					{likedProducts ? (
 						<>
-							{userLikedProducts().map((item) => (
+							{likedProducts.map((item) => (
 								<Card
-									product={item}
+									product={item.product}
 									widthCard={236}
 									variant='fullInfo'
 									icon='delete'

@@ -16,6 +16,7 @@
 			position: absolute;
 			top: 0;
 			display: flex;
+			flex-wrap: wrap;
 			gap: 2px;
 		}
 
@@ -67,12 +68,6 @@
 				font-weight: 600;
 				font-size: 16px;
 			}
-		}
-	}
-
-	button {
-		&:hover {
-			background: var(--main-color-darker);
 		}
 	}
 }

@@ -20,6 +20,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../storage/hooks/useAppSelector';
 import { userSelectors } from '../../storage/slices/user';
 import { BodyText } from '../ui';
+import { cartSelectors } from '../../storage/slices/cart';
 
 export const Header = () => {
 	const accessToken = useAppSelector(userSelectors.accessTokenSelector);
@@ -33,6 +34,9 @@ export const Header = () => {
 	const handleClose = () => setAnchorEl(null);
 
 	const location = useLocation();
+	const currentUser = useAppSelector(userSelectors.getUser);
+	const countFavorites = useAppSelector(userSelectors.getLikedProductsCount);
+	const countCartProducts = useAppSelector(cartSelectors.getTotalCartItems);
 
 	return (
 		<AppBar
@@ -73,9 +77,28 @@ export const Header = () => {
 							<div className='toolbar_icons'>
 								<Link to={'/favoritesProducts'} state={{ from: location }}>
 									<SvgIcon component={FavoritesIcon} inheritViewBox />
+									{currentUser?.likes?.length &&
+										currentUser?.likes?.length > 0 && (
+											<div className='toolbar_icons_counter'>
+												<BodyText
+													text={countFavorites}
+													size='s2'
+													color='var(--white-color)'
+												/>
+											</div>
+										)}
 								</Link>
-								<Link to={'/'}>
+								<Link to={'/cart'}>
 									<SvgIcon component={CartIcon} inheritViewBox />
+									{countCartProducts > 0 && (
+										<div className='toolbar_icons_counter'>
+											<BodyText
+												text={countCartProducts}
+												size='s2'
+												color='var(--white-color)'
+											/>
+										</div>
+									)}
 								</Link>
 								<Link to={'/profile'}>
 									<SvgIcon component={DogIcon} inheritViewBox />

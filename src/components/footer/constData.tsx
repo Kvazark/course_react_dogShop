@@ -72,7 +72,7 @@ export const menuItems: TItemLink[] = [
 	},
 	{
 		id: 'menu-item-cart-789',
-		link: '/card',
+		link: '/cart',
 		title: 'Корзина',
 		icon: <CartIcon />,
 	},

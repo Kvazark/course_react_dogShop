@@ -26,6 +26,21 @@
 	&_icons {
 		display: flex;
 		gap: 34px;
+
+		a {
+			position: relative;
+		}
+
+		&_counter {
+			position: absolute;
+			top: -20%;
+			right: -10%;
+			padding: 1px 4px;
+			text-decoration: none;
+			background: var(--custom-green);
+			border: 1px solid var(--main-color);
+			border-radius: 20px;
+		}
 	}
 }
 
