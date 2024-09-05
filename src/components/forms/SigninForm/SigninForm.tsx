@@ -4,13 +4,14 @@ import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { signUpFormSchema } from '../helpers/validator';
+import { signInFormSchema } from '../helpers/validator';
 import { userActions } from '../../../storage/slices/user';
 import { toast } from 'react-toastify';
 import { getMessageFromError } from '../../../utils/errorUtils';
 import { Box, Container, TextField } from '@mui/material';
 import { useSignInMutation } from '../../../api/authApi';
 import { Button, HeaderText } from '../../ui';
+import { SIGN_UP_FORM_SETTINGS } from '../SignupForm/helpers/constants';
 
 export const SignInForm: FC = () => {
 	const dispatch = useDispatch();
@@ -26,7 +27,7 @@ export const SignInForm: FC = () => {
 			email: '',
 			password: '',
 		},
-		resolver: yupResolver(signUpFormSchema),
+		resolver: yupResolver(signInFormSchema),
 	});
 
 	const submitHandler: SubmitHandler<SignUpFormValues> = async (values) => {
@@ -36,14 +37,14 @@ export const SignInForm: FC = () => {
 			dispatch(
 				userActions.setAccessToken({ accessToken: response.accessToken })
 			);
-			toast.success('Вы успешно зарегистрированы!');
+			toast.success('Вы успешно вошли в аккаунт!');
 			navigate('/');
 		} catch (error) {
 			console.log({ error });
 			toast.error(
 				getMessageFromError(
 					error,
-					'Не известная ошибка при регистрации пользователя'
+					'Не известная ошибка при авторизации пользователя'
 				)
 			);
 		}
@@ -78,6 +79,7 @@ export const SignInForm: FC = () => {
 									autoComplete='email'
 									error={!!errors.email?.message}
 									helperText={errors.email?.message}
+									data-testid={SIGN_UP_FORM_SETTINGS.TEST_IDS.EMAIL}
 									{...field}
 								/>
 							)}
@@ -94,12 +96,14 @@ export const SignInForm: FC = () => {
 									margin='normal'
 									fullWidth
 									required
+									data-testid={SIGN_UP_FORM_SETTINGS.TEST_IDS.PASSWORD}
 									{...field}
 								/>
 							)}
 						/>
 						<Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 							<Button
+								dataTestid={SIGN_UP_FORM_SETTINGS.TEST_IDS.SUBMIT_BTN}
 								view='primary'
 								disabled={isSubmitted && (!isValid || isSubmitting)}
 								label='Войти'

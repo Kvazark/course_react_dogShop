@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { getMessageFromError } from '../../../utils/errorUtils';
 import { Box, Container, TextField } from '@mui/material';
 import { BodyText, Button, HeaderText } from '../../ui';
+import { SIGN_UP_FORM_SETTINGS } from './helpers/constants';
 
 export const SignUpForm = () => {
 	const dispatch = useDispatch();
@@ -50,9 +51,9 @@ export const SignUpForm = () => {
 	};
 
 	return (
-		///обвёртка не лишняя, т.к. органичивает ширину Box и делает контент по центру
 		<Container component='main' maxWidth='xs'>
 			<Box
+				data-testid={SIGN_UP_FORM_SETTINGS.TEST_IDS.FORM_TITLE}
 				sx={{
 					marginTop: 8,
 					display: 'flex',
@@ -83,6 +84,7 @@ export const SignUpForm = () => {
 								autoComplete='email'
 								error={!!errors.email?.message}
 								helperText={errors.email?.message}
+								data-testid={SIGN_UP_FORM_SETTINGS.TEST_IDS.EMAIL}
 								{...field}
 							/>
 						)}
@@ -99,6 +101,7 @@ export const SignUpForm = () => {
 								margin='normal'
 								fullWidth
 								required
+								data-testid={SIGN_UP_FORM_SETTINGS.TEST_IDS.PASSWORD}
 								{...field}
 							/>
 						)}
@@ -112,10 +115,11 @@ export const SignUpForm = () => {
 					/>
 					<Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 						<Button
+							type='submit'
+							dataTestid={SIGN_UP_FORM_SETTINGS.TEST_IDS.SUBMIT_BTN}
 							view='primary'
 							label='Зарегистрироваться'
 							disabled={isSubmitted && (!isValid || isSubmitting)}
-							onClick={() => handleSubmit}
 						/>
 						<Button
 							view='outlined'

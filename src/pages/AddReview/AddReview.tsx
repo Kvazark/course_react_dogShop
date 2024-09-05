@@ -21,6 +21,7 @@ import {
 	useGetAverageRatingForProductQuery,
 } from '../../api/products';
 import { IAddReview } from '../../api/interfaces';
+import { toast } from 'react-toastify';
 
 export const AddReview = () => {
 	const dispatch = useAppDispatch();
@@ -75,6 +76,7 @@ export const AddReview = () => {
 								);
 							});
 					}
+					toast.success('Вы оставили отзыв!');
 				})
 				.catch((error) => {
 					alert('Error adding review: ' + error);

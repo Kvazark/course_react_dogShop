@@ -34,7 +34,7 @@ export const Cart = withProtection(() => {
 				/>
 				<span>в корзине</span>
 			</div>
-			{!!cartProducts.length ? (
+			{cartProducts.length > 0 ? (
 				<>
 					<div className={s.wrapper_content}>
 						<div className={s.wrapper_products}>

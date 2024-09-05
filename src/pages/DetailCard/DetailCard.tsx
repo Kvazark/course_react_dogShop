@@ -95,6 +95,7 @@ export const DetailCard = () => {
 		<div className='detailCard-wrapper'>
 			<div className='favorites-wrapper_header'>
 				<Button
+					dataTestid='btn-back'
 					label={<BodyText text='Назад' size='p2' />}
 					view='link'
 					contentLeft={

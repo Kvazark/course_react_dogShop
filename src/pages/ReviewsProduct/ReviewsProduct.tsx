@@ -113,7 +113,11 @@ export const ReviewsProduct = withProtection(() => {
 					<div className={s.wrapper_leaveReview_title}>
 						<SvgIcon component={CommentsIcon} />
 						<BodyText
-							text='Еще никто не оставил отзыв. Станьте первым! '
+							text={
+								reviewsProduct?.length !== 0
+									? 'Оставьте свой отзыв!'
+									: 'Еще никто не оставил отзыв. Станьте первым! '
+							}
 							size='p1'
 							fontWeight='600'
 						/>

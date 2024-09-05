@@ -60,13 +60,16 @@ export const IconCard = ({ product, variant }: TIconCard) => {
 		<>
 			{variant === 'favorite' ? (
 				<SvgIcon
+					data-testid='like-btn'
 					component={like ? FavoritesFillIcon : FavoritesIcon}
 					onClick={(event) => {
 						event.preventDefault();
 						event.stopPropagation();
 						product.likes && handleLikeClick();
 					}}
-					className='card-wrapper_img-box_fav-icon'
+					className={`card-wrapper_img-box_fav-icon ${
+						like ? 'liked' : 'not-liked'
+					}`}
 				/>
 			) : (
 				<SvgIcon

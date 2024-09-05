@@ -18,6 +18,14 @@ import { useAppDispatch } from '../../storage/hooks';
 import React, { useCallback, useEffect, useState } from 'react';
 import { LoadMore } from '../../components/LoadMore';
 import { productsSlice } from '../../storage/slices/products/products-slice';
+import { TSortOption } from '../../components/sort/Sort';
+// import {
+// 	sortByDiscount,
+// 	sortByNewest,
+// 	sortByPopular,
+// 	sortByPriceHighToLow,
+// 	sortByPriceLowToHigh,
+// } from '../../utils/sortProducts';
 
 export const Catalog = withProtection(() => {
 	const dispatch = useAppDispatch();
@@ -26,6 +34,8 @@ export const Catalog = withProtection(() => {
 		searchTerm: '',
 		page: 1,
 	});
+
+	const [currentSort, setCurrentSort] = useState<TSortOption>('newest');
 
 	const currentSearchFilter = useAppSelector(productsSelectors.getSearchFilter);
 	const products = useAppSelector(productsSelectors.getProducts);
@@ -43,6 +53,33 @@ export const Catalog = withProtection(() => {
 			setSearchValue((prev) => ({ ...prev, page: prev.page + 1 }));
 	}, [isEndOfList]);
 
+	//const [sortedProducts, setSortedProducts] = useState(products);
+
+	const handleSortChange = async (sort: TSortOption) => {
+		setCurrentSort(sort);
+		switch (sort) {
+			case 'newest':
+				//setSortedProducts(sortByNewest(products));
+				break;
+			case 'price-low-to-high':
+				//setSortedProducts(sortByPriceLowToHigh(products));
+				break;
+			case 'price-high-to-low':
+				//setSortedProducts(sortByPriceHighToLow(products));
+				break;
+			case 'rating':
+				//setSortedProducts(await sortByRating(products));
+				break;
+			case 'discount':
+				//setSortedProducts(sortByDiscount(products));
+				break;
+			case 'popular':
+				//setSortedProducts(sortByPopular(products));
+				break;
+			default:
+			//setSortedProducts(products);
+		}
+	};
 	useEffect(() => {
 		if (data) {
 			dispatch(
@@ -89,8 +126,11 @@ export const Catalog = withProtection(() => {
 						<HeaderText text='Каталог' size='h1' />
 					</div>
 				)}
-				{products.length > 0 && <Sort />}
+				{products.length > 0 && (
+					<Sort onSortChange={handleSortChange} currentSort={currentSort} />
+				)}
 			</div>
+			{/*Сортировку с бэка взять*/}
 			{products.length > 0 && (
 				<CardList
 					isError={isError}
@@ -100,7 +140,7 @@ export const Catalog = withProtection(() => {
 						error,
 						'Unknown error with products'
 					)}
-					products={data?.products ?? []}
+					products={products ?? []}
 				/>
 			)}
 			{!!data?.products?.length && (

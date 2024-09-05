@@ -11,6 +11,7 @@ type TButtonProps = {
 	stretch?: boolean;
 	onClick?: () => void;
 	type?: 'submit' | 'reset' | 'button';
+	dataTestid?: string;
 };
 export const CustomButton = ({
 	label,
@@ -21,6 +22,7 @@ export const CustomButton = ({
 	stretch,
 	onClick,
 	type,
+	dataTestid,
 }: TButtonProps) => {
 	const getButtonStyles = () => {
 		switch (view) {
@@ -73,6 +75,7 @@ export const CustomButton = ({
 
 	return (
 		<Button
+			data-testid={dataTestid}
 			onClick={onClick}
 			disabled={disabled}
 			type={type}

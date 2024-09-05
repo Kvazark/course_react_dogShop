@@ -8,7 +8,7 @@ import {
 	HeaderText,
 	PlaceholderCard,
 } from '../../ui';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { isLiked } from '../../../utils/product';
 import { useAppSelector } from '../../../storage/hooks/useAppSelector';
 import { userActions, userSelectors } from '../../../storage/slices/user';
@@ -149,6 +149,7 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 				</div>
 				<div className={s.cardWrapper_description_favorite}>
 					<SvgIcon
+						data-testid='like-btn'
 						component={like ? FavoritesFillIcon : FavoritesIcon}
 						sx={{
 							path: {
@@ -160,6 +161,7 @@ export const BodyDetailCard = ({ productProps }: TBodyDetailCardProps) => {
 							event.stopPropagation();
 							product.likes && handleLikeClick();
 						}}
+						className={`${like ? 'liked' : 'not-liked'}`}
 					/>
 					<BodyText
 						text={like ? 'Убрать из избранного' : 'В избранное'}

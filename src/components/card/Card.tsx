@@ -98,6 +98,7 @@ export const Card = ({
 	return (
 		<div className='card-wrapper link-reset'>
 			<Link
+				data-testid='card-product'
 				to={`/product/${product.id}`}
 				state={{ from: location }}
 				className='card-wrapper link-reset'
@@ -137,7 +138,9 @@ export const Card = ({
 				</div>
 				<div className='card-wrapper_description'>
 					<div className='card-wrapper_description_price'>
-						{!!product && <span>{product.price} ₽</span>}
+						{product.discount !== 0 && product.discount !== null && (
+							<span>{product.price} ₽</span>
+						)}
 						<p
 							style={{
 								color:

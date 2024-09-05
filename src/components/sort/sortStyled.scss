@@ -16,6 +16,10 @@
 	}
 
 	&_menu {
+		display: flex;
+		align-content: center;
+		gap: 8px;
+
 		button {
 			padding: 0;
 			min-width: 10px;
@@ -27,4 +31,8 @@
 		gap: 8px;
 		align-items: center;
 	}
+}
+
+.btn-sort {
+	cursor: pointer;
 }

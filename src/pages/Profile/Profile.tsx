@@ -76,7 +76,12 @@ export const ProfileComponent = withQuery(
 				</div>
 				<div className='profile-wrapper_buttons'>
 					<Button label='Изменить' view='outlined' onClick={handleEditClick} />
-					<Button label='Выйти' view='outlined' onClick={handleExitClick} />
+					<Button
+						dataTestid='btn-logout'
+						label='Выйти'
+						view='outlined'
+						onClick={handleExitClick}
+					/>
 				</div>
 			</div>
 		);
