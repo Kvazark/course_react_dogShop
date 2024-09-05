@@ -1,0 +1,54 @@
+.toolbar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 80px;
+	height: 100%;
+
+	@media screen and (width <= 1200px) {
+		justify-content: space-between;
+		gap: 2px;
+		padding: 0 16px;
+	}
+
+	@media screen and (width <= 600px) {
+		justify-content: space-between;
+		gap: 4px;
+		padding: 0 16px;
+
+		button {
+			min-width: 30px;
+			max-width: 40px;
+			padding: 0;
+		}
+	}
+
+	&_icons {
+		display: flex;
+		gap: 34px;
+
+		a {
+			position: relative;
+		}
+
+		&_counter {
+			position: absolute;
+			top: -20%;
+			right: -10%;
+			padding: 1px 4px;
+			text-decoration: none;
+			background: var(--custom-green);
+			border: 1px solid var(--main-color);
+			border-radius: 20px;
+		}
+	}
+}
+
+.noAuth {
+	display: flex;
+	gap: 16px;
+
+	a {
+		text-decoration: none;
+	}
+}

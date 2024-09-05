@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path'); //для того чтобы превратить отнсительный путь в абсолютный мы будем использовать пакет path
 const webpack = require('webpack');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 const production = process.env.NODE_ENV === 'production';
 
@@ -13,6 +14,7 @@ module.exports = {
 		filename: production
 			? 'static/scripts/[name].[contenthash].js'
 			: 'static/scripts/[name].js', // имя нашего бандла
+		publicPath: process.env.PUBLIC_URL ? process.env.PUBLIC_URL : '/',
 	},
 	//Нужно помочь вебпаку научится работать с jsx и tsx файлами для этого используют ts loader
 	module: {
@@ -88,6 +90,9 @@ module.exports = {
 		}),
 		new webpack.EnvironmentPlugin({
 			NODE_ENV: 'development', // значение по умолчанию 'development' если переменная process.env.NODE_ENV не передана
+		}),
+		new webpack.DefinePlugin({
+			'process.env': JSON.stringify(process.env),
 		}),
 	],
 };

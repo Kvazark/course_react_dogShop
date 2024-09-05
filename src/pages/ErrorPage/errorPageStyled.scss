@@ -1,0 +1,29 @@
+.errorPage-wrapper {
+	display: flex;
+	flex-grow: 1;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 20px;
+
+	svg {
+		width: 180px;
+		height: 180px;
+
+		path {
+			fill: var(--text-outline);
+		}
+	}
+
+	@media screen and (width <= 800px) {
+		flex-wrap: wrap;
+		padding: 0 5%;
+		text-align: center;
+
+		svg {
+			width: 100px;
+			height: 100px;
+			fill: var(--text-secondary);
+		}
+	}
+}

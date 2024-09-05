@@ -1,0 +1,33 @@
+.detailCard-wrapper {
+	display: flex;
+	flex-direction: column;
+
+	&_content {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+
+		&_header {
+			display: flex;
+			gap: 16px;
+			margin: 4px 0 20px;
+
+			a {
+				text-decoration: none;
+			}
+
+			span {
+				color: var(--text-secondary);
+			}
+		}
+
+		&_stars {
+			display: flex;
+			gap: 5px;
+		}
+
+		a {
+			color: var(--main-color-darker);
+		}
+	}
+}

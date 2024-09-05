@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"target": "ES5",
+		"noEmit": false,
+		"types": ["cypress", "node"],
+		"isolatedModules": false,
+		"sourceMap": false
+	},
+	"rootDir": "..",
+	"include": ["**/*.ts"]
+}

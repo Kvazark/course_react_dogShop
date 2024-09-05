@@ -1,0 +1,53 @@
+.wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	&_header {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+
+		span {
+			font-size: 28px;
+			line-height: 32px;
+			font-weight: 500;
+		}
+	}
+
+	&_content {
+		display: flex;
+		width: 100%;
+		gap: 60px;
+		margin-bottom: 40px;
+	}
+
+	&_products {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		flex: 1;
+	}
+
+	&_infoCart {
+		display: flex;
+		flex-direction: column;
+		gap: 40px;
+	}
+
+	@media screen and (max-width: 1200px) {
+		&_content {
+			flex-direction: column;
+		}
+
+		&_infoCard {
+			background: brown;
+		}
+	}
+}
+
+.separator {
+	width: 100%;
+	height: 1px;
+	background: var(--text-form);
+}

@@ -1,0 +1,20 @@
+.homepage-wrapper {
+	width: 300px;
+	height: 100px;
+	background: var(--main-color);
+
+	&_btn-to-catalog {
+		display: flex;
+		width: fit-content;
+		padding: 16px;
+		background: var(--white-color);
+		border-radius: 60px;
+
+		a {
+			display: flex;
+			gap: 8px;
+			color: var(--text-main);
+			text-decoration: none;
+		}
+	}
+}

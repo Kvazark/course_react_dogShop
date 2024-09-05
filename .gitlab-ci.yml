@@ -1,0 +1,61 @@
+default:
+  image: node:18
+  cache:
+    key:
+      files:
+        - package-lock.json
+    paths:
+      - node_modules/
+
+stages:
+  - build
+  - test
+  - deploy
+
+install_dependencies:
+  tags:
+    - '#reactjs'
+  stage: build
+  script:
+    - yarn install
+
+build_job:
+  tags:
+    - '#reactjs'
+  stage: build
+  script:
+    - yarn build
+  variables:
+    # PUBLIC_URL: https://erklebleeva.pages.atdcode.ru/homework-react-21514128
+    # PUBLIC_PATH: /homework-react-21514128
+  artifacts:
+    paths:
+      - dist/
+  needs:
+    - install_dependencies
+
+# test_job:
+#   tags:
+#     - '#reactjs'
+#   stage: test
+#   script:
+#     - npm run jest
+#   artifacts:
+#     reports:
+#       junit: junit.xml
+#   needs:
+#     - install_dependencies
+
+pages:
+  tags:
+    - '#reactjs'
+  image: alpine:latest
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - rm -rf public
+    - mv dist public
+  artifacts:
+    paths:
+      - public

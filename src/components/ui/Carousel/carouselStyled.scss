@@ -1,0 +1,58 @@
+.carousel-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+
+	&_header {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	&_buttons {
+		display: flex;
+		flex-direction: row;
+		gap: 16px;
+
+		@media screen and (width <= 800px) {
+			display: none;
+		}
+	}
+}
+
+.carouselReviews {
+	.rec-carousel {
+		position: relative;
+
+		button {
+			top: 25%;
+			height: 28px;
+		}
+	}
+
+	button:disabled {
+		visibility: hidden;
+	}
+}
+
+.carouselCatalog {
+	.rec-carousel {
+		position: relative;
+
+		button {
+			position: absolute;
+			top: -60px;
+
+			@media screen and (width <= 800px) {
+				display: none;
+			}
+		}
+	}
+
+	.rec-carousel button:first-child {
+		right: 55px;
+	}
+
+	.rec-carousel button:last-child {
+		right: 0;
+	}
+}
